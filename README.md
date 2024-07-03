@@ -1,2 +1,3 @@
-# helisius_spring_training
-Helisius Project training on Java JPA Spring
+## helisius_spring_training
+# Helisius.io Project training on Java JPA Spring
+Related to http://helisius.io
