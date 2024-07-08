@@ -8,11 +8,10 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 @Entity
-@Table(name="events")
+@Table(name = "events")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -20,7 +19,7 @@ public class EventsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  int id;
+    private int id;
 
     @Column(nullable = false, length = 50)
     @ColumnDefault("\"Nouveau Titre\"")
@@ -39,10 +38,21 @@ public class EventsEntity {
     @Column(nullable = false)
     private boolean isActive;
 
-    @ManyToOne
-    @MapsId("referencedEventForGroupsId")
-    private EventsGroupsUsersEntity eventId;
+    @OneToOne
+    @JoinColumn(name = "referenced_events_address_id")
+    private AddressEventsEntity referencedAddressEventsID;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "referencedEventId")
-    private List<EventsKeywordsEntity> keywordsList = new ArrayList<>();
+    @OneToMany(mappedBy = "relatedEventsId", fetch = FetchType.LAZY)
+    private Collection<EventsMediasEntity> referencedEventsMediaID;
+
+    @OneToMany(mappedBy = "relatedEventsId", fetch = FetchType.LAZY)
+    private Collection<EventsGroupsUsersEntity> referencedEventGroupsID;
+
+    @ManyToMany()
+    @JoinTable(name = "fk_events_referer_keywords",
+            joinColumns = @JoinColumn(name = "events_id"),
+            inverseJoinColumns = @JoinColumn(name = "keywords_id")
+
+    )
+    private Collection<EventsKeywordsEntity> referencedKeywordsList;
 }

@@ -3,13 +3,16 @@ package org.genose.helisius_spring_training.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 
+import java.util.Collection;
 @Entity
 @Table(name = "adress_events")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class AddressEventsEntity {

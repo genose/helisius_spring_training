@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
+
 @Entity
-@Table(name="keywords_category")
+@Table(name = "events_keywords_category")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -18,7 +20,7 @@ public class EventsKeywordsCategoryEntity {
     @Column(name = "category_name")
     private String categoryName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "associated_category")
-    EventsKeywordsEntity referencedKeywordsCategoryId;
+    @ManyToMany(mappedBy = "referencedCategoryId", fetch = FetchType.LAZY)
+
+    private Collection<EventsKeywordsEntity> referencedKeywordsCategoryId;
 }

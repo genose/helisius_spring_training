@@ -9,10 +9,9 @@ import org.hibernate.validator.constraints.Length;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @Entity
-@Table(name = "users_events_groups")
+@Table(name = "events_groups_users")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -22,12 +21,19 @@ public class EventsGroupsUsersEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(name="group_name", nullable = false, unique = true, length = 50)
     @ColumnDefault("\"Nouveau Groupe\"")
     @Length(min = 5, max = 50)
     private String groupName;
 
-    @OneToMany(mappedBy = "referencedEventGroupId")
-    private Collection<EventsGroupsUsersMessagesEntity> referencedMessagesId = new ArrayList<>();
+    @OneToOne
+    private UserEntity referencedUserAuthor;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "related_events_id")
+    private EventsEntity relatedEventsId;
+
+    @OneToMany(mappedBy = "relatedEventsGroupsId", orphanRemoval = true )
+    private Collection<EventsGroupsUsersMessagesEntity> referencedGroupsMessagesId;
 
 }

@@ -9,6 +9,5 @@ public class EventsGroupsUsersMessagesIDEntity implements Serializable {
 
     private int eventId;
     private int groupId;
-    private int userId;
 
 }

@@ -21,7 +21,4 @@ public class UserProfileAssetsEntity {
     @Length(min = 12, max = 50)
     private String assetUri;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private UserEntity associatedUserId;
-
 }

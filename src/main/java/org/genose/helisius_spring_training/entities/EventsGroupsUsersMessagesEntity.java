@@ -36,11 +36,12 @@ public class EventsGroupsUsersMessagesEntity {
     @UpdateTimestamp
     private LocalDate modifiedDate;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     private UserEntity referencedUserAuthor;
 
     @ManyToOne( fetch = FetchType.LAZY)
-    private EventsGroupsUsersEntity referencedEventGroupId;
+    @JoinColumn(name = "related_events_groups_id")
+    private EventsGroupsUsersEntity relatedEventsGroupsId;
 
 
 }

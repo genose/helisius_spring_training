@@ -49,13 +49,8 @@ public class UserEntity {
     @Length(min = 32, max = 128)
     private String email;
 
-    @OneToOne(fetch = FetchType.EAGER, orphanRemoval = false)
-    @JoinColumn(name = "user_related")
+    @OneToOne( fetch = FetchType.EAGER )
+    @JoinColumn(name = "user_assets_id")
     private UserProfileAssetsEntity userAssets;
-
-    // @OneToMany(fetch = FetchType.LAZY, orphanRemoval=false)
-    //  @PrimaryKeyJoinColumn(name = "events_groups")
-    // private ArrayList<UsersEventsGroupsEntity> usersEventsGroups = new ArrayList<>();
-
 
 }

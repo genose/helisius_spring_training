@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -27,11 +28,11 @@ public class EventsKeywordsEntity {
     @ColumnDefault("\"New Keyword description\"")
     private String description;
 
-    @OneToMany(fetch=FetchType.LAZY, mappedBy = "referencedKeywordsCategoryId")
-    List<EventsKeywordsCategoryEntity> referencedCategoryId;
+    @ManyToMany()
+    @JoinTable(name = "fk_keywords_referer_category",
+            joinColumns = @JoinColumn(name = "keywords_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_keywords")
-    private EventsEntity referencedEventId;
-
+    )
+    private Collection<EventsKeywordsCategoryEntity> referencedCategoryId;
 }
