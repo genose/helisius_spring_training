@@ -5,6 +5,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/groups")
-public class GroupsRoutesController extends RoutesBaseController {
+public class GroupsRoutesController extends BaseRoutesController {
 
 }

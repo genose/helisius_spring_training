@@ -5,5 +5,5 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/events")
-public class EventsRoutesController  extends RoutesBaseController {
+public class EventsRoutesController  extends BaseRoutesController {
 }

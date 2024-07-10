@@ -8,17 +8,13 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.Collection;
-import java.util.List;
 
 @Entity
 @Table(name = "events_keywords")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class EventsKeywordsEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class EventsKeywordsEntity extends BaseCommonEntity {
 
     @Column(nullable = false)
     @ColumnDefault("\"New Keyword\"")

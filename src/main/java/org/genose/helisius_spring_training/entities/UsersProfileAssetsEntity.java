@@ -11,11 +11,7 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class UserProfileAssetsEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class UsersProfileAssetsEntity extends BaseCommonEntity {
 
     @Column(name ="asset_uri" , nullable = false, unique = true, length = 50)
     @Length(min = 12, max = 50)

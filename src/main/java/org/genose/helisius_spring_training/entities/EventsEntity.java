@@ -15,11 +15,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class EventsEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class EventsEntity extends BaseCommonEntity {
 
     @Column(nullable = false, length = 50)
     @ColumnDefault("\"Nouveau Titre\"")

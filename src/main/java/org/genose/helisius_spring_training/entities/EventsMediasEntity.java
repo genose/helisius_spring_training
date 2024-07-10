@@ -11,21 +11,18 @@ import org.hibernate.validator.constraints.Length;
 
 
 @Entity
-@Table(name="events_medias")
+@Table(name = "events_medias")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventsMediasEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class EventsMediasEntity extends BaseCommonEntity {
 
     @Column(name = "media_url", nullable = false, length = 255)
     @Length(min = 12, max = 255)
     private String mediaUrl;
 
     @ColumnDefault("0")
-    @Column(name="media_order", nullable = false)
+    @Column(name = "media_order", nullable = false)
     @Min(0)
     @Max(12)
     private int mediaOrder;

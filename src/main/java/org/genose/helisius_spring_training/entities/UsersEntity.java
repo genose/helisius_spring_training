@@ -6,23 +6,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class UserEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class UsersEntity extends BaseCommonEntity {
 
     @Column(name = "profile_name", unique = false, nullable = true, length = 20)
     @ColumnDefault("\"New User\"")
@@ -51,6 +45,6 @@ public class UserEntity {
 
     @OneToOne( fetch = FetchType.EAGER )
     @JoinColumn(name = "user_assets_id")
-    private UserProfileAssetsEntity userAssets;
+    private UsersProfileAssetsEntity userAssets;
 
 }
