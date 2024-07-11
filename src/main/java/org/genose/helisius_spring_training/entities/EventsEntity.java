@@ -3,18 +3,22 @@ package org.genose.helisius_spring_training.entities;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDate;
 import java.util.Collection;
 
 @Entity
 @Table(name = "events")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@EqualsAndHashCode(callSuper = true)
+@DynamicUpdate
 public class EventsEntity extends BaseCommonEntity {
 
     @Column(nullable = false, length = 50)

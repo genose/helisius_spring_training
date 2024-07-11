@@ -5,7 +5,7 @@ import org.genose.helisius_spring_training.dtos.BaseGetResponseDTO;
 import org.genose.helisius_spring_training.dtos.BasePostRequestDTO;
 import org.genose.helisius_spring_training.entities.BaseCommonEntity;
 
-public class BaseMapperEntity<S> extends ObjectMapper {
+public class BaseMapperEntity  extends ObjectMapper {
 
     public static BaseCommonEntity dtoToEntity(BasePostRequestDTO dto) {
         BaseCommonEntity returnedEnt = new BaseCommonEntity();

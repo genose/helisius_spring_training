@@ -38,6 +38,6 @@ public class MainController {
                 .pathsToMatch("/docs/**")
                 .build();
     }
-    
+
     */
 }

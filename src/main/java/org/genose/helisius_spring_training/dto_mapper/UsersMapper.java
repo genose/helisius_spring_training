@@ -5,7 +5,7 @@ import org.genose.helisius_spring_training.dtos.UsersPostRequestDTO;
 import org.genose.helisius_spring_training.entities.UsersEntity;
 import org.genose.helisius_spring_training.mapper.BaseMapperEntity;
 
-public class UsersMapper extends BaseMapperEntity<UsersEntity> {
+public class UsersMapper extends BaseMapperEntity {
 
     public static UsersEntity dtoToEntity(UsersPostRequestDTO requestDTO) {
         UsersEntity returnedEnt = new UsersEntity();
