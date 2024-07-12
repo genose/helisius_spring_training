@@ -2,8 +2,16 @@ package org.genose.helisius_spring_training.services;
 
 import jakarta.validation.constraints.PositiveOrZero;
 import org.genose.helisius_spring_training.dtos.BaseGetResponseDTO;
+import org.genose.helisius_spring_training.entities.BaseCommonEntity;
+import org.genose.helisius_spring_training.repositories.BaseRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public abstract class BaseServiceImpl {
     /* ****** ****** ****** ****** */
@@ -15,25 +23,21 @@ public abstract class BaseServiceImpl {
         return null;
     }
 
-    /* public <S extends BaseCommonEntity, T, Long, ID> List<T> fetchEntitiesAndConvertToDto(  ? extends BaseRepository  repository, Function<S, T> mapper) {
-        return StreamSupport.stream(repository.findAll().spliterator(), false)
+    public <S extends BaseCommonEntity, T extends BaseRepository> List<T> fetchEntitiesAndConvertToDto(
+            T repository,
+            Function<S, T> mapper) {
+        return (List<T>) StreamSupport.stream(repository.findAll().spliterator(), false)
                 .map(mapper)
                 .collect(Collectors.toList());
-    }*/
+    }
 
-    public <S> Iterable<S> saveAll(Iterable<S> entities) {
+    public <S extends BaseCommonEntity> Iterable<S> saveAll(Iterable<S> entities) {
         return null;
     }
 
-    /*
     @PositiveOrZero
-    public <S> Optional<S extends BaseGetResponseDTO> findById(Integer integer) {
+    public <S extends BaseGetResponseDTO> Optional<S> findById(Integer id) {
         return Optional.empty();
-    } */
-
-    @PositiveOrZero
-    public <S extends BaseGetResponseDTO> S findById(Integer id) {
-        return null;
     }
 
 

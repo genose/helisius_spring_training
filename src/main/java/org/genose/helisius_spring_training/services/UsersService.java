@@ -4,7 +4,7 @@ import org.genose.helisius_spring_training.dto_mapper.UsersMapperDTO;
 import org.genose.helisius_spring_training.dtos.UsersGetResponseDTO;
 import org.genose.helisius_spring_training.entities.UsersEntity;
 import org.genose.helisius_spring_training.repositories.UsersRepository;
-import org.genose.helisius_spring_training.utils.ClassStackUtils;
+import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,15 +18,14 @@ import java.util.stream.StreamSupport;
 public class UsersService extends BaseServiceImpl implements UserDetailsService {
     private final UsersRepository usersRepository;
 
-    public UsersService(UsersRepository usersRepository
-    ) {
+    public UsersService(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
 
     /* ****** ****** ****** ****** */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        this.logger.info(ClassStackUtils.getEnclosingMethodObject(this) + " :: " + username);
+        this.logger.info(GNSClassStackUtils.getEnclosingMethodObject(this) + " :: " + username);
         return usersRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
@@ -38,6 +37,7 @@ public class UsersService extends BaseServiceImpl implements UserDetailsService 
                 UsersMapper::entityToDto);
 
         */
+
         return StreamSupport.stream(
                         usersRepository.findAll().spliterator()
                         , false)
@@ -47,14 +47,13 @@ public class UsersService extends BaseServiceImpl implements UserDetailsService 
 
     /* ****** ****** ****** ****** */
     @Override
-    public UsersGetResponseDTO findById(Integer id) {
+    public Optional<UsersGetResponseDTO> findById(Integer id) {
         Optional<UsersEntity> usersEntityOptional = usersRepository.findById(id);
         if (usersEntityOptional.isPresent()) {
             UsersEntity entityToDto = usersEntityOptional.get();
-
-            return UsersMapperDTO::entityToDto(entityToDto) ;
+            UsersGetResponseDTO responseDTO = UsersMapperDTO.entityToDto(entityToDto);
+            return Optional.of(responseDTO);
         }
+        return null;
     }
-
-
 }

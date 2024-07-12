@@ -4,7 +4,7 @@ package org.genose.helisius_spring_training.controller.routes;
 import jakarta.persistence.MappedSuperclass;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.genose.helisius_spring_training.utils.ClassStackUtils;
+import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -50,11 +50,11 @@ abstract public class BaseRoutesController {
     public String get(@RequestParam Map<String, String> allParams) {
         logger.info(
                 this.getClass().getSimpleName() + " :: "
-                        + ClassStackUtils.getEnclosingMethodObject(this)
+                        + GNSClassStackUtils.getEnclosingMethodObject(this)
                         + " Query params {}", allParams.entrySet());
         return "Hello World ! Base::"
                 + this.getClass().getSimpleName()
-                + " :: " + ClassStackUtils.getEnclosingMethodObject(this);
+                + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this);
     }
 
     /* ****** ****** ****** ****** */
@@ -62,11 +62,11 @@ abstract public class BaseRoutesController {
     public Collection<Object> getAll(@RequestParam Map<String, String> allParams) {
         logger.info(
                 this.getClass().getSimpleName() + " :: "
-                        + ClassStackUtils.getEnclosingMethodObject(this)
+                        + GNSClassStackUtils.getEnclosingMethodObject(this)
                         + " Query params {}", allParams.entrySet());
         String message = "Hello World ! Base::"
                 + this.getClass().getSimpleName()
-                + " :: " + ClassStackUtils.getEnclosingMethodObject(this);
+                + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this);
         ArrayList<Object> list = new ArrayList<>();
         list.add(message);
 
@@ -79,13 +79,13 @@ abstract public class BaseRoutesController {
                                                  @RequestParam Map<String, String> allParams) {
         logger.info(
                 this.getClass().getSimpleName() + " :: "
-                        + ClassStackUtils.getEnclosingMethodObject(this)
+                        + GNSClassStackUtils.getEnclosingMethodObject(this)
                         + " Query params {}", allParams.entrySet());
 
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
                 .body("Hello World ! Base::"
                         + this.getClass().getSimpleName()
-                        + " :: " + ClassStackUtils.getEnclosingMethodObject(this));
+                        + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this));
     }
 
     /* ****** ****** ****** ****** */
@@ -97,13 +97,13 @@ abstract public class BaseRoutesController {
 
         logger.info(
                 this.getClass().getSimpleName() + " :: "
-                        + ClassStackUtils.getEnclosingMethodObject(this)
+                        + GNSClassStackUtils.getEnclosingMethodObject(this)
                         + " Query params {}", allParams.entrySet());
 
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
                 .body("From Class : Base::"
                         + this.getClass().getSimpleName()
-                        + " :: " + ClassStackUtils.getEnclosingMethodObject(this));
+                        + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this));
     }
 
     /* ****** ****** ****** ****** */
@@ -113,9 +113,9 @@ abstract public class BaseRoutesController {
     public ResponseEntity<Object> updateEntityByID(@RequestBody Object entity, @PathVariable int id) {
         logger.info(
                 this.getClass().getSimpleName() + " :: "
-                        + ClassStackUtils.getEnclosingMethodObject(this)
+                        + GNSClassStackUtils.getEnclosingMethodObject(this)
                         + " Query params {}", id);
-        return ResponseEntity.unprocessableEntity().body("From Class : Base::" + this.getClass().getSimpleName() + " :: " + ClassStackUtils.getEnclosingMethodObject(this));
+        return ResponseEntity.unprocessableEntity().body("From Class : Base::" + this.getClass().getSimpleName() + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this));
     }
 
     /* ****** ****** ****** ****** */
@@ -123,10 +123,10 @@ abstract public class BaseRoutesController {
     public ResponseEntity<Object> deleteEntity(@RequestParam Map<String, String> allParams) {
         logger.info(
                 this.getClass().getSimpleName() + " :: "
-                        + ClassStackUtils.getEnclosingMethodObject(this)
+                        + GNSClassStackUtils.getEnclosingMethodObject(this)
                         + " Query params {}", allParams.entrySet());
 
-        return ResponseEntity.unprocessableEntity().body("From Class : Base::" + this.getClass().getSimpleName() + " :: " + ClassStackUtils.getEnclosingMethodObject(this));
+        return ResponseEntity.unprocessableEntity().body("From Class : Base::" + this.getClass().getSimpleName() + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this));
     }
 
     /* ****** ****** ****** ****** */
@@ -134,9 +134,9 @@ abstract public class BaseRoutesController {
     public ResponseEntity<Object> deleteEntityByID(@PathVariable int id, @RequestParam Map<String, String> allParams) {
         logger.info(
                 this.getClass().getSimpleName() + " :: "
-                        + ClassStackUtils.getEnclosingMethodObject(this)
+                        + GNSClassStackUtils.getEnclosingMethodObject(this)
                         + " Query params {}", allParams.entrySet());
-        return ResponseEntity.unprocessableEntity().body("From Class : Base::" + this.getClass().getSimpleName() + " :: " + ClassStackUtils.getEnclosingMethodObject(this));
+        return ResponseEntity.unprocessableEntity().body("From Class : Base::" + this.getClass().getSimpleName() + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this));
     }
 
     /* ****** ****** ****** ****** */
@@ -151,7 +151,7 @@ abstract public class BaseRoutesController {
     public ResponseEntity<Object> handleException(Exception e) {
         String message = e.getMessage();
         String className = this.getClass().getSimpleName();
-        String methodName = ClassStackUtils.getEnclosingMethodObject(this);
+        String methodName = GNSClassStackUtils.getEnclosingMethodObject(this);
         String loggerMessageFormatted = String.format("Exception occurred in [%s] %s : %s ", className, methodName, message);
         // Send error to local Logger instance
         logger.error(loggerMessageFormatted, e);

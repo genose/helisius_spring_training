@@ -7,7 +7,7 @@ import jakarta.validation.Valid;
 import org.genose.helisius_spring_training.configuration.JWTService;
 import org.genose.helisius_spring_training.dtos.UsersPostRequestDTO;
 import org.genose.helisius_spring_training.services.UsersService;
-import org.genose.helisius_spring_training.utils.ClassStackUtils;
+import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -97,7 +97,7 @@ public class UsersRoutesController extends BaseRoutesController {
     @PostMapping(BaseRoutesController.LOGIN_REGISTER_URL)
     public ResponseEntity<?> register(@Valid @RequestBody UsersPostRequestDTO argUser) {
         try {
-            this.logger.info(ClassStackUtils.getEnclosingMethodObject(this) + " :: " + argUser);
+            this.logger.info(GNSClassStackUtils.getEnclosingMethodObject(this) + " :: " + argUser);
             usersService.save(argUser);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
