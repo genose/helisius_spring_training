@@ -19,15 +19,14 @@ import java.util.Map;
 
 @Service
 public class JWTService {
+    public static final String COOKIE_TOKEN_NAME = "SessionChosenTokenJWT";
+    public static final String BEARER_TOKEN = "Bearer ";
+    @Value("#{${jwt-expiration:1440}* 60 * 1000}")
 
+    private static Long tokenExpiration;
     private final UserDetailsService userDetailsService;
-
     @Value("${jwt-secret:keysecret}")
     private String secret;
-
-    @Value("${jwt-expiration:1440}")
-    private Long tokenExpiration;
-
     @Getter
     private Map<String, String> encodedTokenWithBearer;
 
@@ -38,6 +37,10 @@ public class JWTService {
     /* ****** ****** ****** ****** */
     public JWTService(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
+    }
+
+    public static long getTokenExpiration() {
+        return JWTService.tokenExpiration;
     }
 
     /* ****** ****** ****** ****** */
@@ -87,14 +90,17 @@ public class JWTService {
                 // .setExpiration(jwtExpirationDate)
                 .signWith(secretSigningKeyForJWT)
                 .compact();
-        this.encodedTokenWithBearer = Map.of("Bearer", localEncodedToken
+        this.encodedTokenWithBearer = Map.of(this.BEARER_TOKEN, localEncodedToken
                 , "ExpiresAt", jwtExpirationDate.toString()
         );
         return this.encodedTokenWithBearer;
     }
 
     /* ****** ****** ****** ****** */
-    private Claims getDecodedTokenClaims(String argToken) {
+    public Claims getDecodedTokenClaims(String argToken) {
+        String tokenToDecode = ((argToken != null && !argToken.isEmpty()) ?
+                argToken : this.encodedTokenWithBearer.getOrDefault(this.BEARER_TOKEN, "Nullable"));
+
         return (Claims) Jwts.parser()
                 .verifyWith(secretSigningKeyForJWT)
                 .build()

@@ -2,13 +2,15 @@ package org.genose.helisius_spring_training.services;
 
 import jakarta.validation.constraints.PositiveOrZero;
 import org.genose.helisius_spring_training.dtos.BaseGetResponseDTO;
-import org.genose.helisius_spring_training.dtos.UsersGetResponseDTO;
-
-import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class BaseServiceImpl {
     /* ****** ****** ****** ****** */
-    
+    protected Logger logger = LoggerFactory.getLogger(BaseServiceImpl.class);
+
+    /* ****** ****** ****** ****** */
+    /* ****** ****** ****** ****** */
     public <S> S save(S entity) {
         return null;
     }
@@ -18,7 +20,7 @@ public abstract class BaseServiceImpl {
                 .map(mapper)
                 .collect(Collectors.toList());
     }*/
-    
+
     public <S> Iterable<S> saveAll(Iterable<S> entities) {
         return null;
     }
@@ -30,7 +32,7 @@ public abstract class BaseServiceImpl {
     } */
 
     @PositiveOrZero
-        public <S extends BaseGetResponseDTO> S  findById(Integer id) {
+    public <S extends BaseGetResponseDTO> S findById(Integer id) {
         return null;
     }
 
@@ -39,42 +41,42 @@ public abstract class BaseServiceImpl {
         return false;
     }
 
-    
+
     public Iterable<?> findAll() {
         return null;
     }
 
-    
+
     public Iterable<?> findAllById(Iterable<Integer> integers) {
         return null;
     }
 
-    
+
     public long count() {
         return 0;
     }
 
-    
+
     public void deleteById(Integer integer) {
 
     }
 
-    
+
     public void delete(Object entity) {
 
     }
 
-    
+
     public void deleteAllById(Iterable<? extends Integer> integers) {
 
     }
 
-    
+
     public void deleteAll(Iterable<?> entities) {
 
     }
 
-    
+
     public void deleteAll() {
 
     }

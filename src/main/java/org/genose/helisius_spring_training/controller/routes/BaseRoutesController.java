@@ -4,7 +4,6 @@ package org.genose.helisius_spring_training.controller.routes;
 import jakarta.persistence.MappedSuperclass;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-
 import org.genose.helisius_spring_training.utils.ClassStackUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,21 +22,51 @@ import java.util.Map;
 @RestController
 abstract public class BaseRoutesController {
     /* ****** ****** ****** ****** */
-    protected Logger logger = LoggerFactory.getLogger(BaseRoutesController.class);
     /* ****** ****** ****** ****** */
+    /* ****** ******
+     Spring possede 2 Approche pour le filtrage URL
+     ****** ****** */
+    /* ****** ******
+     L autre approche est l utilisation de
+        @Preauthorize + ENUM
+        @PreAuthorize("hasRole('ROLE_USER')")
+    * ****** ****** */
+    final public static String EVENTS_URL = "/events";
+    final public static String GROUPS_URL = "/groups";
+    final public static String USERS_URL = "/users";
+    /* ****** ****** ****** ****** */
+    final public static String LOGIN_URL = USERS_URL + "/login";
+    final public static String LOGIN_REGISTER_URL = USERS_URL + "/users/login";
+    final public static String LOGOUT_URL = USERS_URL + "/logout";
+    final public static String LOGIN_RESET_PASSWORD_URL = USERS_URL + "/reset-password";
+    final public static String LOGIN_FAILURE_URL = USERS_URL + "/login-failure";
+    final public static String LOGIN_PASSWORD_FAILURE_URL = USERS_URL + "/reset-password-failure";
+    /* ****** ****** ****** ****** */
+    protected Logger logger = LoggerFactory.getLogger(BaseRoutesController.class);
 
+    /* ****** ****** ****** ****** */
     /* ****** ****** ****** ****** */
     @GetMapping("")
     public String get(@RequestParam Map<String, String> allParams) {
-        logger.info(" Query params {}", allParams.entrySet());
-        return "Hello World ! Base::" + this.getClass().getSimpleName() + " :: " + ClassStackUtils.getEnclosingMethodObject(this);
+        logger.info(
+                this.getClass().getSimpleName() + " :: "
+                        + ClassStackUtils.getEnclosingMethodObject(this)
+                        + " Query params {}", allParams.entrySet());
+        return "Hello World ! Base::"
+                + this.getClass().getSimpleName()
+                + " :: " + ClassStackUtils.getEnclosingMethodObject(this);
     }
 
     /* ****** ****** ****** ****** */
     @GetMapping("/all")
     public Collection<Object> getAll(@RequestParam Map<String, String> allParams) {
-        logger.info(" Query params {}", allParams.entrySet());
-        String message = "Hello World ! Base::" + this.getClass().getSimpleName() + " :: " + ClassStackUtils.getEnclosingMethodObject(this);
+        logger.info(
+                this.getClass().getSimpleName() + " :: "
+                        + ClassStackUtils.getEnclosingMethodObject(this)
+                        + " Query params {}", allParams.entrySet());
+        String message = "Hello World ! Base::"
+                + this.getClass().getSimpleName()
+                + " :: " + ClassStackUtils.getEnclosingMethodObject(this);
         ArrayList<Object> list = new ArrayList<>();
         list.add(message);
 
@@ -46,18 +75,35 @@ abstract public class BaseRoutesController {
 
     /* ****** ****** ****** ****** */
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getDetailsById(@PathVariable int id, @RequestParam Map<String, String> allParams) {
-        logger.info(" Query params {}", allParams.entrySet());
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("Hello World ! Base::" + this.getClass().getSimpleName() + " :: " + ClassStackUtils.getEnclosingMethodObject(this));
+    public ResponseEntity<Object> getDetailsById(@PathVariable int id,
+                                                 @RequestParam Map<String, String> allParams) {
+        logger.info(
+                this.getClass().getSimpleName() + " :: "
+                        + ClassStackUtils.getEnclosingMethodObject(this)
+                        + " Query params {}", allParams.entrySet());
+
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
+                .body("Hello World ! Base::"
+                        + this.getClass().getSimpleName()
+                        + " :: " + ClassStackUtils.getEnclosingMethodObject(this));
     }
 
     /* ****** ****** ****** ****** */
     @PatchMapping("")
     @PutMapping("")
     @PostMapping("")
-    public ResponseEntity<Object> saveEntity(@RequestBody Object entity, @RequestParam Map<String, String> allParams) {
-        logger.info(" Query params {}", allParams.entrySet());
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("From Class : Base::" + this.getClass().getSimpleName() + " :: " + ClassStackUtils.getEnclosingMethodObject(this));
+    public ResponseEntity<Object> saveEntity(@RequestBody Object entity,
+                                             @RequestParam Map<String, String> allParams) {
+
+        logger.info(
+                this.getClass().getSimpleName() + " :: "
+                        + ClassStackUtils.getEnclosingMethodObject(this)
+                        + " Query params {}", allParams.entrySet());
+
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
+                .body("From Class : Base::"
+                        + this.getClass().getSimpleName()
+                        + " :: " + ClassStackUtils.getEnclosingMethodObject(this));
     }
 
     /* ****** ****** ****** ****** */
@@ -65,20 +111,31 @@ abstract public class BaseRoutesController {
     @PutMapping("/{id}")
     @PostMapping("/{id}")
     public ResponseEntity<Object> updateEntityByID(@RequestBody Object entity, @PathVariable int id) {
+        logger.info(
+                this.getClass().getSimpleName() + " :: "
+                        + ClassStackUtils.getEnclosingMethodObject(this)
+                        + " Query params {}", id);
         return ResponseEntity.unprocessableEntity().body("From Class : Base::" + this.getClass().getSimpleName() + " :: " + ClassStackUtils.getEnclosingMethodObject(this));
     }
 
     /* ****** ****** ****** ****** */
     @DeleteMapping("")
     public ResponseEntity<Object> deleteEntity(@RequestParam Map<String, String> allParams) {
-        logger.info(" Query params {}", allParams.entrySet());
+        logger.info(
+                this.getClass().getSimpleName() + " :: "
+                        + ClassStackUtils.getEnclosingMethodObject(this)
+                        + " Query params {}", allParams.entrySet());
+
         return ResponseEntity.unprocessableEntity().body("From Class : Base::" + this.getClass().getSimpleName() + " :: " + ClassStackUtils.getEnclosingMethodObject(this));
     }
 
     /* ****** ****** ****** ****** */
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteEntityByID(@PathVariable int id, @RequestParam Map<String, String> allParams) {
-        logger.info(" Query params {}", allParams.entrySet());
+        logger.info(
+                this.getClass().getSimpleName() + " :: "
+                        + ClassStackUtils.getEnclosingMethodObject(this)
+                        + " Query params {}", allParams.entrySet());
         return ResponseEntity.unprocessableEntity().body("From Class : Base::" + this.getClass().getSimpleName() + " :: " + ClassStackUtils.getEnclosingMethodObject(this));
     }
 
@@ -88,6 +145,7 @@ abstract public class BaseRoutesController {
     public String hello() {
         return "Hello, World!";
     }
+
     /* ****** ****** ****** ****** */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception e) {

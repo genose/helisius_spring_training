@@ -4,8 +4,17 @@ import org.genose.helisius_spring_training.dtos.UsersGetResponseDTO;
 import org.genose.helisius_spring_training.dtos.UsersPostRequestDTO;
 import org.genose.helisius_spring_training.entities.UsersEntity;
 import org.genose.helisius_spring_training.mapper.BaseMapperEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-public class UsersMapper extends BaseMapperEntity {
+@Service
+public class UsersMapperDTO extends BaseMapperEntity {
+
+    private final PasswordEncoder passwordEncoder;
+
+    public UsersMapperDTO(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public static UsersEntity dtoToEntity(UsersPostRequestDTO requestDTO) {
         UsersEntity returnedEnt = new UsersEntity();

@@ -1,15 +1,20 @@
 package org.genose.helisius_spring_training.mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.genose.helisius_spring_training.dtos.BaseGetResponseDTO;
 import org.genose.helisius_spring_training.dtos.BasePostRequestDTO;
 import org.genose.helisius_spring_training.entities.BaseCommonEntity;
+import org.genose.helisius_spring_training.utils.ClassStackUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class BaseMapperEntity  extends ObjectMapper {
+public class BaseMapperEntity extends ObjectMapper {
+    protected Logger logger = LoggerFactory.getLogger(BaseMapperEntity.class);
 
-    public static BaseCommonEntity dtoToEntity(BasePostRequestDTO dto) {
+
+    public BaseCommonEntity dtoToEntity(BasePostRequestDTO dto) {
         BaseCommonEntity returnedEnt = new BaseCommonEntity();
-        returnedEnt.getId();
+        Integer idValue = returnedEnt.getId();
+        this.logger.info(this.getClass().getSimpleName() + " :: " + ClassStackUtils.getEnclosingMethodObject(this));
 
         return returnedEnt;
     }
@@ -19,7 +24,7 @@ public class BaseMapperEntity  extends ObjectMapper {
         return new BaseGetResponseDTO(s.getId(), null, null);
     }*/
 
-   /*  public static <S> Object entityToDto(S s) {
+    /*public <S extends BaseGetResponseDTO, T extends BaseCommonEntity> S entityToDto(T ent) {
         S s1 = new S();
         return s1;
     }*/
