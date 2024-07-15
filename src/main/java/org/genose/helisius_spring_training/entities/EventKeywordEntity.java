@@ -14,7 +14,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class EventsKeywordsEntity extends BaseCommonEntity {
+public class EventKeywordEntity extends BaseCommonEntity {
 
     @Column(nullable = false)
     @ColumnDefault("\"New Keyword\"")
@@ -30,5 +30,5 @@ public class EventsKeywordsEntity extends BaseCommonEntity {
             inverseJoinColumns = @JoinColumn(name = "category_id")
 
     )
-    private Collection<EventsKeywordsCategoryEntity> referencedCategoryId;
+    private Collection<EventKeywordCategoryEntity> referencedCategoryId;
 }

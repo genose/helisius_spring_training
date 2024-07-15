@@ -28,7 +28,7 @@ import java.util.List;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @DynamicUpdate
-public class UsersEntity extends BaseCommonEntity implements UserDetails {
+public class UserEntity extends BaseCommonEntity implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     // @Column(name = "role", nullable = false)
@@ -79,7 +79,7 @@ public class UsersEntity extends BaseCommonEntity implements UserDetails {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_assets_id")
-    private UsersProfileAssetsEntity userAssets;
+    private UserProfileAssetEntity userAssets;
 
     @JsonSerialize
     private Serializable encodedToken;

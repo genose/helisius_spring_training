@@ -19,7 +19,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @DynamicUpdate
-public class EventsEntity extends BaseCommonEntity {
+public class EventEntity extends BaseCommonEntity {
 
     @Column(nullable = false, length = 50)
     @ColumnDefault("\"Nouveau Titre\"")
@@ -40,13 +40,13 @@ public class EventsEntity extends BaseCommonEntity {
 
     @OneToOne
     @JoinColumn(name = "referenced_events_address_id")
-    private AddressEventsEntity referencedAddressEventsID;
+    private AddressEventEntity referencedAddressEventsID;
 
     @OneToMany(mappedBy = "relatedEventsId", fetch = FetchType.LAZY)
-    private Collection<EventsMediasEntity> referencedEventsMediaID;
+    private Collection<EventMediaEntity> referencedEventsMediaID;
 
     @OneToMany(mappedBy = "relatedEventsId", fetch = FetchType.LAZY)
-    private Collection<EventsGroupsUsersEntity> referencedEventGroupsID;
+    private Collection<EventGroupUserEntity> referencedEventGroupsID;
 
     @ManyToMany()
     @JoinTable(name = "fk_events_referer_keywords",
@@ -54,5 +54,5 @@ public class EventsEntity extends BaseCommonEntity {
             inverseJoinColumns = @JoinColumn(name = "keywords_id")
 
     )
-    private Collection<EventsKeywordsEntity> referencedKeywordsList;
+    private Collection<EventKeywordEntity> referencedKeywordsList;
 }

@@ -6,11 +6,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.genose.helisius_spring_training.entities.UsersEntity;
-import org.genose.helisius_spring_training.services.UsersService;
+import org.genose.helisius_spring_training.entities.UserEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,81 +20,82 @@ import java.util.logging.Logger;
 
 @Service
 public class JWTFilter extends OncePerRequestFilter {
-    private static final String HEADER_STRING = "Authorization";
-    private static final String TOKEN_PREFIX = "Bearer ";
-    private final org.genose.helisius_spring_training.configuration.JWTService JWTService;
-    private UsersService userDetailsService;
+	private static final String HEADER_STRING = "Authorization";
+	private static final String TOKEN_PREFIX = "Bearer ";
+	private final JWTService jwtService;
+	private UserDetailsService userDetailsService;
 
-    public JWTFilter(JWTService JWTService) {
-        this.JWTService = JWTService;
-    }
+	public JWTFilter(JWTService jwtService) {
+		this.jwtService = jwtService;
+	}
 
-    @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request,
-                                    @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
-        String token = null;
-        String tokenFromCookie = null;
-        String username = null;
-        try {
-            final Cookie[] cookies = request.getCookies();
-            /* ****** ****** ***** ****** */
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    if (cookie.getDomain().equals(response.getHeader("Host"))
-                            && cookie.getName().equals(org.genose.helisius_spring_training.configuration.JWTService.COOKIE_TOKEN_NAME)
-                    ) {
-                        tokenFromCookie = cookie.getValue();
 
-                        if (tokenFromCookie != null
-                                && tokenFromCookie.startsWith(TOKEN_PREFIX)
-                                && tokenFromCookie.length() > TOKEN_PREFIX.length()
-                                && SecurityContextHolder.getContext().getAuthentication() == null
-                        ) {
-                            username = this.JWTService.extractUsername(tokenFromCookie);
+	@Override
+	protected void doFilterInternal(@NonNull HttpServletRequest request,
+	                                @NonNull HttpServletResponse response,
+	                                @NonNull FilterChain filterChain)
+			throws ServletException, IOException {
+		String token = null;
+		String tokenFromCookie = null;
+		String username = null;
+		try {
+			final Cookie[] cookies = request.getCookies();
+			/* ****** ****** ***** ****** */
+			if (cookies != null) {
+				for (Cookie cookie : cookies) {
+					if (cookie.getDomain().equals(response.getHeader("Host"))
+							&& cookie.getName().equals(org.genose.helisius_spring_training.configuration.JWTService.COOKIE_TOKEN_NAME)
+					) {
+						tokenFromCookie = cookie.getValue();
 
-                            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+						if (tokenFromCookie != null
+								&& tokenFromCookie.startsWith(TOKEN_PREFIX)
+								&& tokenFromCookie.length() > TOKEN_PREFIX.length()
+								&& SecurityContextHolder.getContext().getAuthentication() == null
+						) {
+							username = this.jwtService.extractUsername(tokenFromCookie);
 
-                        }
-                        break;
-                    }
-                }
-            }
-            /* ****** ****** ***** ****** */
+							UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-            try {
-                if (tokenFromCookie == null) {
-                    token = request.getHeader(HEADER_STRING);
-                    if (token.startsWith(TOKEN_PREFIX)) {
-                        String jwtToken = token.replace(TOKEN_PREFIX, "");
+						}
+						break;
+					}
+				}
+			}
+			/* ****** ****** ***** ****** */
 
-                        Claims claims = JWTService.getDecodedTokenClaims(token);
-                        username = claims.getSubject();
-                        if (username != null) {
-                            Logger.getLogger(this.getClass().getSimpleName()).info(this.getClass() + " :: Tokenized User : " + username);
-                        } else {
-                            Logger.getLogger(this.getClass().getSimpleName()).info(this.getClass() + " :: NO Tokenized User : " + username);
-                        }
+			try {
+				if (tokenFromCookie == null) {
+					token = request.getHeader(HEADER_STRING);
+					if (token.startsWith(TOKEN_PREFIX)) {
+						String jwtToken = token.replace(TOKEN_PREFIX, "");
 
-                    }
-                }
-            } catch (Exception e) {
-                Logger.getLogger(this.getClass().getSimpleName()).info(this.getClass() + " :: Tokenized Error : " + e.getMessage());
-            }
-        } catch (Exception e) {
+						Claims claims = this.jwtService.getDecodedTokenClaims(token);
+						username = claims.getSubject();
+						if (username != null) {
+							Logger.getLogger(this.getClass().getSimpleName()).info(this.getClass() + " :: Tokenized User : " + username);
+						} else {
+							Logger.getLogger(this.getClass().getSimpleName()).info(this.getClass() + " :: NO Tokenized User : " + username);
+						}
 
-            if (username != null
-                    && !username.isEmpty()
-            ) {
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-                // ... userDetails.getUsername();
-                UsersEntity userEntity = (UsersEntity) userDetails;
-                Map<String, String> tokenMap = JWTService.generateEncodedTokenFromUsersEntity(userEntity);
-                String newToken = tokenMap.get("token");
-                response.setHeader(HEADER_STRING, TOKEN_PREFIX + newToken);
+					}
+				}
+			} catch (Exception e) {
+				Logger.getLogger(this.getClass().getSimpleName()).info(this.getClass() + " :: Tokenized Error : " + e.getMessage());
+			}
+		} catch (Exception e) {
 
-            }
-        }
-    }
+			if (username != null
+					&& !username.isEmpty()
+			) {
+				UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+				// ... userDetails.getUsername();
+				UserEntity userEntity = (UserEntity) userDetails;
+				Map<String, String> tokenMap = this.jwtService.generateEncodedTokenFromUsersEntity(userEntity);
+				String newToken = tokenMap.get("token");
+				response.setHeader(HEADER_STRING, TOKEN_PREFIX + newToken);
+
+			}
+		}
+	}
 }

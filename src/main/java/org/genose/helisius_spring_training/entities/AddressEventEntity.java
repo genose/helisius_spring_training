@@ -16,7 +16,7 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @DynamicUpdate
-public class AddressEventsEntity extends BaseCommonEntity {
+public class AddressEventEntity extends BaseCommonEntity {
 
     private String name;
     @Length(min = 1, max = 128)

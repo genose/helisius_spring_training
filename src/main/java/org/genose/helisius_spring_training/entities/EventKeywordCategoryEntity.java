@@ -12,11 +12,11 @@ import java.util.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class EventsKeywordsCategoryEntity extends BaseCommonEntity {
+public class EventKeywordCategoryEntity extends BaseCommonEntity {
 
     @Column(name = "category_name")
     private String categoryName;
 
     @ManyToMany(mappedBy = "referencedCategoryId", fetch = FetchType.LAZY)
-    private Collection<EventsKeywordsEntity> referencedKeywordsCategoryId;
+    private Collection<EventKeywordEntity> referencedKeywordsCategoryId;
 }
