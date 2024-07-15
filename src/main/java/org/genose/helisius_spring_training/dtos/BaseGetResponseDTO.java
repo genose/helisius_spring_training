@@ -34,6 +34,13 @@ public class BaseGetResponseDTO {
         this.dateUpdated = dateUpdated;
     }
 
+    public BaseGetResponseDTO(int id) {
+        this.id = id;
+        this.dateCreated = null;
+        this.dateUpdated = null;
+
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;

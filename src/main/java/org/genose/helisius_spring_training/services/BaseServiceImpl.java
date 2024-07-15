@@ -3,15 +3,14 @@ package org.genose.helisius_spring_training.services;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.genose.helisius_spring_training.dtos.BaseGetResponseDTO;
 import org.genose.helisius_spring_training.entities.BaseCommonEntity;
+import org.genose.helisius_spring_training.mapper.BaseMapperEntity;
 import org.genose.helisius_spring_training.repositories.BaseRepository;
+import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public abstract class BaseServiceImpl {
     /* ****** ****** ****** ****** */
@@ -23,12 +22,34 @@ public abstract class BaseServiceImpl {
         return null;
     }
 
-    public <S extends BaseCommonEntity, T extends BaseRepository> List<T> fetchEntitiesAndConvertToDto(
-            T repository,
-            Function<S, T> mapper) {
-        return (List<T>) StreamSupport.stream(repository.findAll().spliterator(), false)
-                .map(mapper)
-                .collect(Collectors.toList());
+    public <
+            S extends BaseCommonEntity,
+            T extends BaseGetResponseDTO,
+            W extends BaseRepository<? extends BaseCommonEntity, Integer>
+            >
+    List<T> fetchEntitiesAndConvertToDto(
+            Class<? extends BaseCommonEntity> inputEntityClass,
+            Class<? extends BaseGetResponseDTO> responseDtoClass,
+            Class<? extends BaseRepository<? extends BaseCommonEntity, Integer>> repositoryClass
+    ) {
+        try {
+            if (repositoryClass == null) {
+                throw new IllegalArgumentException("Repository cannot be null");
+            }
+            W newRepository = (W) repositoryClass.getDeclaredConstructor().newInstance();
+            List<S> entityList = (List<S>) newRepository.findAll();
+
+            return entityList.stream()
+                    .map(entity -> (T) BaseMapperEntity
+                            .convertFromEntityToDTO(entity, (Class<? extends BaseGetResponseDTO>) repositoryClass)
+                    )
+                    .toList();
+
+        } catch (Exception e) {
+            logger.error(this.getClass().getSimpleName() + " :: " +
+                    GNSClassStackUtils.getEnclosingMethodObject(this) + " :: " + e.getMessage());
+        }
+        return null;
     }
 
     public <S extends BaseCommonEntity> Iterable<S> saveAll(Iterable<S> entities) {

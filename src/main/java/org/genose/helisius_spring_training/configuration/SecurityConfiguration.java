@@ -28,14 +28,14 @@ public class SecurityConfiguration {
     private final JWTFilter JWTFilters;
 
     /* ****** ****** ****** ****** */
-    @Bean
-    public JWTFilter jwtFilter(JWTService jwtService) {
-        return new JWTFilter(jwtService);
+    public SecurityConfiguration(@Qualifier("JWTFilter") JWTFilter jwtFilters) {
+        JWTFilters = jwtFilters;
     }
 
     /* ****** ****** ****** ****** */
-    public SecurityConfiguration(@Qualifier("JWTFilter") JWTFilter jwtFilters) {
-        JWTFilters = jwtFilters;
+    @Bean
+    public JWTFilter jwtFilter(JWTService jwtService) {
+        return new JWTFilter(jwtService);
     }
 
     /* ****** ****** ****** ****** */
@@ -45,7 +45,7 @@ public class SecurityConfiguration {
                         request -> {
                             request
                                     /* ****** ******
-                                     Spring possede 2 Approche pour le filtrage URL
+                                     SpringBoot possede Deux Approche pour le filtrage URL
                                      ****** ****** */
                                     /* ****** ******
                                      L autre approche est l utilisation de
@@ -53,6 +53,7 @@ public class SecurityConfiguration {
                                         @PreAuthorize("hasRole('ROLE_USER')")
                                     * ****** ****** */
                                     .requestMatchers(
+                                            BaseRoutesController.LOGIN_GET_TEST_TOKEN_URL,
                                             BaseRoutesController.LOGIN_URL,
                                             BaseRoutesController.LOGIN_REGISTER_URL,
                                             BaseRoutesController.LOGOUT_URL,

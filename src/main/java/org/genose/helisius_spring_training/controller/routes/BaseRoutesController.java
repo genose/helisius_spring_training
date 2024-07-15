@@ -24,7 +24,7 @@ abstract public class BaseRoutesController {
     /* ****** ****** ****** ****** */
     /* ****** ****** ****** ****** */
     /* ****** ******
-     Spring possede 2 Approche pour le filtrage URL
+     SpringBoot possede Deux Approche pour le filtrage URL
      ****** ****** */
     /* ****** ******
      L autre approche est l utilisation de
@@ -41,6 +41,7 @@ abstract public class BaseRoutesController {
     final public static String LOGIN_RESET_PASSWORD_URL = USERS_URL + "/reset-password";
     final public static String LOGIN_FAILURE_URL = USERS_URL + "/login-failure";
     final public static String LOGIN_PASSWORD_FAILURE_URL = USERS_URL + "/reset-password-failure";
+    final public static String LOGIN_GET_TEST_TOKEN_URL = USERS_URL + "/token";
     /* ****** ****** ****** ****** */
     protected Logger logger = LoggerFactory.getLogger(BaseRoutesController.class);
 
@@ -115,7 +116,10 @@ abstract public class BaseRoutesController {
                 this.getClass().getSimpleName() + " :: "
                         + GNSClassStackUtils.getEnclosingMethodObject(this)
                         + " Query params {}", id);
-        return ResponseEntity.unprocessableEntity().body("From Class : Base::" + this.getClass().getSimpleName() + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this));
+        return ResponseEntity.unprocessableEntity()
+                .body("From Class : Base::"
+                        + this.getClass().getSimpleName()
+                        + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this));
     }
 
     /* ****** ****** ****** ****** */
@@ -126,7 +130,10 @@ abstract public class BaseRoutesController {
                         + GNSClassStackUtils.getEnclosingMethodObject(this)
                         + " Query params {}", allParams.entrySet());
 
-        return ResponseEntity.unprocessableEntity().body("From Class : Base::" + this.getClass().getSimpleName() + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this));
+        return ResponseEntity.unprocessableEntity()
+                .body("From Class : Base::"
+                        + this.getClass().getSimpleName()
+                        + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this));
     }
 
     /* ****** ****** ****** ****** */

@@ -6,10 +6,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.tomcat.util.http.parser.Host;
 import org.genose.helisius_spring_training.entities.UsersEntity;
+import org.genose.helisius_spring_training.services.UsersService;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.NonNullApi;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -19,14 +18,12 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.genose.helisius_spring_training.configuration.JWTService;
-
 @Service
 public class JWTFilter extends OncePerRequestFilter {
     private static final String HEADER_STRING = "Authorization";
     private static final String TOKEN_PREFIX = "Bearer ";
     private final org.genose.helisius_spring_training.configuration.JWTService JWTService;
-    private UsersDetailsConfiguration userDetailsService;
+    private UsersService userDetailsService;
 
     public JWTFilter(JWTService JWTService) {
         this.JWTService = JWTService;

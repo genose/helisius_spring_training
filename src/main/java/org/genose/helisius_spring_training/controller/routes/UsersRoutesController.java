@@ -5,18 +5,22 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.genose.helisius_spring_training.configuration.JWTService;
-import org.genose.helisius_spring_training.dtos.UsersPostRequestDTO;
+import org.genose.helisius_spring_training.entities.UsersEntity;
+import org.genose.helisius_spring_training.enums.UsersRolesEnum;
+import org.genose.helisius_spring_training.repositories.UsersRepository;
 import org.genose.helisius_spring_training.services.UsersService;
 import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping(BaseRoutesController.USERS_URL)
@@ -36,28 +40,34 @@ public class UsersRoutesController extends BaseRoutesController {
     private final UsersService usersService;
     private final AuthenticationManager authenticationManager;
     private final JWTService jwtService;
+    private final PasswordEncoder passwordEncoder;
     private final ServletRequest httpServletRequest;
+    private final UsersRepository usersRepository;
 
     public UsersRoutesController(UsersService usersService,
                                  AuthenticationManager authenticationManager,
-                                 JWTService jwtService,
-                                 ServletRequest httpServletRequest) {
+                                 JWTService jwtService, PasswordEncoder passwordEncoder,
+                                 ServletRequest httpServletRequest, UsersRepository usersRepository) {
         this.usersService = usersService;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
         this.httpServletRequest = httpServletRequest;
+        this.usersRepository = usersRepository;
     }
 
-    @GetMapping("/token")
-    @PreAuthorize("hasAnyRole('ROLE_USER,ROLE_ADMIN')")
-    public ResponseEntity<?> get() {
-        return ResponseEntity.ok(
-                jwtService.generateEncodedTokenForEmail("devel@genose.org")
-        );
+    @GetMapping(BaseRoutesController.LOGIN_GET_TEST_TOKEN_URL)
+    public ResponseEntity<?> getFakeToken() {
+        Map<String, String> fakeToken = jwtService.generateEncodedTokenForEmail("devel@genose.org");
+        this.logger.info(
+                GNSClassStackUtils.getEnclosingClass()
+                        + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this)
+                        + " :: fakeToken ::" + fakeToken);
+        return ResponseEntity.ok(fakeToken);
     }
 
     @PostMapping(BaseRoutesController.LOGIN_URL)
-    public ResponseEntity<?> getLogin(@Valid @RequestBody UsersPostRequestDTO argUser,
+    public ResponseEntity<?> getLogin(@Valid @RequestBody UsersEntity argUser,
                                       HttpServletResponse response) {
         try {
 
@@ -95,10 +105,11 @@ public class UsersRoutesController extends BaseRoutesController {
 
     /* ****** ****** ****** ****** */
     @PostMapping(BaseRoutesController.LOGIN_REGISTER_URL)
-    public ResponseEntity<?> register(@Valid @RequestBody UsersPostRequestDTO argUser) {
+    public ResponseEntity<?> register(@Valid @RequestBody UsersEntity argUser) {
         try {
             this.logger.info(GNSClassStackUtils.getEnclosingMethodObject(this) + " :: " + argUser);
-            usersService.save(argUser);
+            argUser.setPassword(passwordEncoder.encode(argUser.getPassword()));
+            argUser.setUserRole(UsersRolesEnum.USER);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             this.logger.error(e.getMessage(), e);

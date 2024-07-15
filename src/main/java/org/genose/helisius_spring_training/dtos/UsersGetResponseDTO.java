@@ -4,7 +4,12 @@ import java.time.LocalDateTime;
 
 public final class UsersGetResponseDTO extends BaseGetResponseDTO {
 
+
     public UsersGetResponseDTO(int id, LocalDateTime dateCreated, LocalDateTime dateUpdated) {
         super(id, dateCreated, dateUpdated);
+    }
+
+    public UsersGetResponseDTO(int id) {
+        super(id);
     }
 }

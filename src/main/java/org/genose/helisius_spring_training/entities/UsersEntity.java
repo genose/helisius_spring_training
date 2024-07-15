@@ -9,7 +9,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.genose.helisius_spring_training.enums.UsersRolesEnum;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
@@ -32,23 +31,21 @@ import java.util.List;
 public class UsersEntity extends BaseCommonEntity implements UserDetails {
 
     @Enumerated(EnumType.STRING)
+    // @Column(name = "role", nullable = false)
     private UsersRolesEnum userRole;
 
     @Column(name = "profile_nickname", unique = true, nullable = false, length = 32)
     @ColumnDefault("\"New User nickname\"")
     @Length(min = 5, max = 32)
     private String profileNickname;
-
     @Column(name = "profile_description", unique = true, nullable = false, length = 32)
     @ColumnDefault("\"New User profiile description\"")
     @Length(min = 5, max = 320)
     private String profileDescription;
-
-    @Column(name = "first_name", unique = false, nullable = false, length =55)
+    @Column(name = "first_name", unique = false, nullable = false, length = 55)
     @ColumnDefault("\"New User firstname\"")
     @Length(min = 5, max = 55)
     private String firstName;
-
     @Column(name = "last_name", unique = false, nullable = false, length = 55)
     @ColumnDefault("\"New User lastname\"")
     @Length(min = 5, max = 55)
@@ -65,7 +62,6 @@ public class UsersEntity extends BaseCommonEntity implements UserDetails {
     // @ColumnDefault("SHA2(\"new_password\", 512)")
     @Length(min = 12, max = 245)
     private String password;
-
     // @CreationTimestamp
     @UpdateTimestamp
     @Column(name = "last_connection", nullable = false, length = 20)
@@ -90,11 +86,7 @@ public class UsersEntity extends BaseCommonEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(
-                new SimpleGrantedAuthority(
-                        "ROLE_" + userRole.toString()
-                )
-        );
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.userRole));
     }
 
     @Override

@@ -36,4 +36,15 @@ public class GNSJsonUtils {
     public static <T> T assignFromObject(T fromEntity) {
         return null;
     }
+
+    /* public static S assignObjectFromJsonModel(S returnedDto,
+                                              T ent,
+                                              U argJSONObject) {
+        try {
+            String json = objectMapper.writeValueAsString(returnedDto);
+            return (S) objectMapper.readValue(json, ent.getClass());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }*/
 }

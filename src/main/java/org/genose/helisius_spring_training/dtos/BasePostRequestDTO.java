@@ -2,7 +2,6 @@ package org.genose.helisius_spring_training.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,11 +17,11 @@ public class BasePostRequestDTO {
     private int id;
 
     @JsonProperty("data")
-    private Map<String,Object> datas;
+    private Map<String, Object> datas;
 
     public BasePostRequestDTO(
-             int Id,
-             Map<String,Object> datas
+            int Id,
+            Map<String, Object> datas
     ) {
         this.id = Id;
         this.datas = datas;
