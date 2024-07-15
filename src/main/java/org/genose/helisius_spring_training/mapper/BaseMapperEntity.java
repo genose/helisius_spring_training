@@ -2,8 +2,7 @@ package org.genose.helisius_spring_training.mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
-import org.genose.helisius_spring_training.dtos.BaseGetResponseDTO;
-import org.genose.helisius_spring_training.dtos.BasePostRequestDTO;
+import org.genose.helisius_spring_training.dtos.BaseResponseRequestDTO;
 import org.genose.helisius_spring_training.entities.BaseCommonEntity;
 import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
 import org.genose.helisius_spring_training.utils.GNSJsonUtils;
@@ -35,10 +34,10 @@ abstract public class BaseMapperEntity extends ObjectMapper {
      */
     protected Logger logger = LoggerFactory.getLogger(BaseMapperEntity.class);
 
-    public static <S extends BaseGetResponseDTO,
+    public static <S extends BaseResponseRequestDTO,
             T extends BaseCommonEntity>
     S convertFromEntityToDTO(T inputEntity,
-                             Class<? extends BaseGetResponseDTO> destinationDtoClass) {
+                             Class<? extends BaseResponseRequestDTO> destinationDtoClass) {
         try {
             if (inputEntity == null) {
                 throw new IllegalArgumentException("Argument inputEntity is null");
@@ -79,7 +78,7 @@ abstract public class BaseMapperEntity extends ObjectMapper {
      * @throws Exception                upon encountering errors during the conversion process.
      */
     public static <S extends BaseCommonEntity,
-            T extends BasePostRequestDTO>
+            T extends BaseResponseRequestDTO>
     S convertFromDTOToEntity(T inputDto,
                              Class<? extends BaseCommonEntity> destinationEntityClass) {
         try {
@@ -122,12 +121,12 @@ abstract public class BaseMapperEntity extends ObjectMapper {
      * @throws IllegalArgumentException if either the Entity object or the DTO class instance is null.
      * @throws Exception                upon encountering errors during the conversion process.
      */
-    public <S extends BaseGetResponseDTO,
+    public <S extends BaseResponseRequestDTO,
             T extends BaseCommonEntity,
             U extends JSONObject>
 
     S convertFromEntityToDTOWithJsonObject(T inputEntity,
-                                           Class<? extends BaseGetResponseDTO> returnedDtoClass,
+                                           Class<? extends BaseResponseRequestDTO> returnedDtoClass,
                                            U argJSONObject) {
         try {
             if (inputEntity == null || returnedDtoClass == null) {
@@ -150,9 +149,9 @@ abstract public class BaseMapperEntity extends ObjectMapper {
     }
 
 
-    public <S extends BaseGetResponseDTO, T extends BaseCommonEntity> S
+    public <S extends BaseResponseRequestDTO, T extends BaseCommonEntity> S
     convertFromEntityToDtoWithJsonPath(T ent,
-                                       Class<? extends BaseGetResponseDTO> destinationDtoClass,
+                                       Class<? extends BaseResponseRequestDTO> destinationDtoClass,
                                        String argJsonFile)
             throws IOException, IllegalAccessException, InstantiationException, NoSuchMethodException {
         try {

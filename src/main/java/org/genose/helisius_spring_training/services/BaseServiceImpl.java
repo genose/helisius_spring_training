@@ -2,6 +2,7 @@ package org.genose.helisius_spring_training.services;
 
 import jakarta.validation.constraints.PositiveOrZero;
 import org.genose.helisius_spring_training.dtos.BaseGetResponseDTO;
+import org.genose.helisius_spring_training.dtos.BaseResponseRequestDTO;
 import org.genose.helisius_spring_training.entities.BaseCommonEntity;
 import org.genose.helisius_spring_training.mapper.BaseMapperEntity;
 import org.genose.helisius_spring_training.repositories.BaseRepository;
@@ -19,15 +20,17 @@ public abstract class BaseServiceImpl {
     /* ****** ****** ****** ****** */
     /* ****** ****** ****** ****** */
     public <S> S save(S entity) {
-        return null;
+        throw new UnsupportedOperationException(this.getClass().getSimpleName() + "::" + GNSClassStackUtils.getEnclosingMethodObject(this) + " :: Not supported yet.");
+        // return null;
     }
 
+    /* ****** ****** ****** ****** */
     public <
             S extends BaseCommonEntity,
-            T extends BaseGetResponseDTO,
+            T extends BaseResponseRequestDTO,
             W extends BaseRepository<? extends BaseCommonEntity, Integer>
             >
-    List<T> fetchEntitiesAndConvertToDto(
+    List<T> fetchAllEntitiesAndConvertToDto(
             Class<? extends BaseCommonEntity> inputEntityClass,
             Class<? extends BaseGetResponseDTO> responseDtoClass,
             Class<? extends BaseRepository<? extends BaseCommonEntity, Integer>> repositoryClass
@@ -57,23 +60,42 @@ public abstract class BaseServiceImpl {
     }
 
     @PositiveOrZero
-    public <S extends BaseGetResponseDTO> Optional<S> findById(Integer id) {
-        return Optional.empty();
+    public <S extends BaseResponseRequestDTO,
+            T extends BaseRepository<? extends BaseCommonEntity, Integer>,
+            W extends BaseCommonEntity
+            >
+    Optional<S> findById(
+            Integer id,
+            Class<? extends BaseCommonEntity> inputEntityClass,
+            Class<? extends BaseResponseRequestDTO> outputDTOClass,
+            T inputRepositoryObject
+    ) {
+        @PositiveOrZero Optional<W> result = (Optional<W>) inputRepositoryObject.findById(id);
+        Optional<S> responseDTO = Optional.empty();
+        if (result.isPresent()) {
+            W entityObject = result.get();
+            responseDTO = Optional.ofNullable((S) BaseMapperEntity
+                    .convertFromEntityToDTO(entityObject, (Class<? extends BaseResponseRequestDTO>) outputDTOClass));
+        }
+        return responseDTO;
     }
 
 
     public boolean existsById(Integer integer) {
-        return false;
+        throw new UnsupportedOperationException(this.getClass().getSimpleName() + "::" + GNSClassStackUtils.getEnclosingMethodObject(this) + " :: Not supported yet.");
+        // return false;
     }
 
 
     public Iterable<?> findAll() {
-        return null;
+        throw new UnsupportedOperationException(this.getClass().getSimpleName() + "::" + GNSClassStackUtils.getEnclosingMethodObject(this) + " :: Not supported yet.");
+        // return null;
     }
 
 
     public Iterable<?> findAllById(Iterable<Integer> integers) {
-        return null;
+
+        throw new UnsupportedOperationException(this.getClass().getSimpleName() + "::" + GNSClassStackUtils.getEnclosingMethodObject(this) + " :: Not supported yet.");
     }
 
 
@@ -83,27 +105,27 @@ public abstract class BaseServiceImpl {
 
 
     public void deleteById(Integer integer) {
-
+        throw new UnsupportedOperationException(this.getClass().getSimpleName() + "::" + GNSClassStackUtils.getEnclosingMethodObject(this) + " :: Not supported yet.");
     }
 
 
     public void delete(Object entity) {
-
+        throw new UnsupportedOperationException(this.getClass().getSimpleName() + "::" + GNSClassStackUtils.getEnclosingMethodObject(this) + " :: Not supported yet.");
     }
 
 
     public void deleteAllById(Iterable<? extends Integer> integers) {
-
+        throw new UnsupportedOperationException(this.getClass().getSimpleName() + "::" + GNSClassStackUtils.getEnclosingMethodObject(this) + " :: Not supported yet.");
     }
 
 
     public void deleteAll(Iterable<?> entities) {
-
+        throw new UnsupportedOperationException(this.getClass().getSimpleName() + "::" + GNSClassStackUtils.getEnclosingMethodObject(this) + " :: Not supported yet.");
     }
 
 
     public void deleteAll() {
-
+        throw new UnsupportedOperationException(this.getClass().getSimpleName() + "::" + GNSClassStackUtils.getEnclosingMethodObject(this) + " :: Not supported yet.");
     }
 
 }

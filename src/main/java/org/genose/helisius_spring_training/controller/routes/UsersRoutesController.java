@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.MessageFormat;
 import java.util.Map;
 
 @RestController
@@ -70,7 +71,8 @@ public class UsersRoutesController extends BaseRoutesController {
     public ResponseEntity<?> getLogin(@Valid @RequestBody UsersEntity argUser,
                                       HttpServletResponse response) {
         try {
-
+            this.logger.info(
+                    MessageFormat.format("{0} :: {1} :: {2}", GNSClassStackUtils.getEnclosingClass(), GNSClassStackUtils.getEnclosingMethodObject(this), argUser));
             final Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             argUser.getEmail(), argUser.getPassword()
@@ -78,6 +80,9 @@ public class UsersRoutesController extends BaseRoutesController {
             );
 
             if (authentication.isAuthenticated()) {
+                this.logger.info(
+                        MessageFormat.format("{0} :: {1} :: Success :: {2}", GNSClassStackUtils.getEnclosingClass(), GNSClassStackUtils.getEnclosingMethodObject(this), argUser));
+
                 String token = jwtService.generateEncodedTokenForEmail(argUser.getEmail())
                         .get(JWTService.COOKIE_TOKEN_NAME);
 
@@ -91,6 +96,7 @@ public class UsersRoutesController extends BaseRoutesController {
                         .build();
 
                 response.addHeader("Set-Cookie", responseCookie.toString());
+                this.logger.info("{} :: {} :: {} :: {}", GNSClassStackUtils.getEnclosingClass(), GNSClassStackUtils.getEnclosingMethodObject(this), argUser, responseCookie);
 
                 return ResponseEntity.ok()
                         .header("Authorization",
@@ -98,6 +104,7 @@ public class UsersRoutesController extends BaseRoutesController {
                         ).build();
             }
         } catch (BadCredentialsException badCredentialsException) {
+            logger.error("{} :: {} :: {}", GNSClassStackUtils.getEnclosingClass(), GNSClassStackUtils.getEnclosingMethodObject(this), badCredentialsException.getMessage());
             logger.error(badCredentialsException.getMessage(), badCredentialsException);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login Utilisateur inconnu");
@@ -107,12 +114,14 @@ public class UsersRoutesController extends BaseRoutesController {
     @PostMapping(BaseRoutesController.LOGIN_REGISTER_URL)
     public ResponseEntity<?> register(@Valid @RequestBody UsersEntity argUser) {
         try {
-            this.logger.info(GNSClassStackUtils.getEnclosingMethodObject(this) + " :: " + argUser);
+            this.logger.info(
+                    MessageFormat.format("{0} :: {1} :: {2}", GNSClassStackUtils.getEnclosingClass(), GNSClassStackUtils.getEnclosingMethodObject(this), argUser));
             argUser.setPassword(passwordEncoder.encode(argUser.getPassword()));
             argUser.setUserRole(UsersRolesEnum.USER);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            this.logger.error(e.getMessage(), e);
+            this.logger.error(
+                    MessageFormat.format("{0} :: {1} :: {2}", GNSClassStackUtils.getEnclosingClass(), GNSClassStackUtils.getEnclosingMethodObject(this), e.getMessage()));
         }
         return ResponseEntity.unprocessableEntity().build();
     }

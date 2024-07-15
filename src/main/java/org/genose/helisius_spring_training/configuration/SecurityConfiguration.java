@@ -1,8 +1,9 @@
 package org.genose.helisius_spring_training.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletResponse;
 import org.genose.helisius_spring_training.controller.routes.BaseRoutesController;
+import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,21 +12,18 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.List;
-import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
-
     private final JWTFilter JWTFilters;
+    protected Logger logger = LoggerFactory.getLogger(SecurityConfiguration.class);
 
     /* ****** ****** ****** ****** */
     public SecurityConfiguration(@Qualifier("JWTFilter") JWTFilter jwtFilters) {
@@ -40,7 +38,9 @@ public class SecurityConfiguration {
 
     /* ****** ****** ****** ****** */
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
+        this.logger.info(
+                GNSClassStackUtils.getEnclosingClass()
+                        + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this));
         return http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(
                         request -> {
                             request
@@ -73,7 +73,8 @@ public class SecurityConfiguration {
                             ;
                             /* ****** ****** ****** ****** */
                         }
-                ).addFilterBefore(
+                )
+                /*.addFilterBefore(
                         JWTFilters, UsernamePasswordAuthenticationFilter.class
                 ).sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -93,7 +94,7 @@ public class SecurityConfiguration {
                             Map<String, ?> errors = Map.of("status", HttpServletResponse.SC_FORBIDDEN,
                                     "error_message", "Accès interdit");
                             response.getWriter().write(new ObjectMapper().writeValueAsString(errors));
-                        }))
+                        }))*/
                 .build();
     }
 

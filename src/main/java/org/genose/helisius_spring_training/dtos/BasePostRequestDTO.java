@@ -12,7 +12,7 @@ import java.util.Objects;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 @Setter
-public class BasePostRequestDTO {
+public class BasePostRequestDTO extends BaseResponseRequestDTO {
     @JsonProperty("id")
     private int id;
 
