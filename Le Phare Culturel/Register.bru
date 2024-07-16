@@ -5,7 +5,19 @@ meta {
 }
 
 post {
-  url: {{api_url}}/register
-  body: none
+  url: {{api_url}}/auth/sign-up
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "firstname": "ne doit pas être nul",
+    "password": "Sam@1981",
+    "profile_nickname": "samuel",
+    "avatar": "/images/1.png",
+    "profile_description": "ne doit pas être nul",
+    "email": "ne@d",
+    "lastname": "ne doit pas être nul"
+  }
 }

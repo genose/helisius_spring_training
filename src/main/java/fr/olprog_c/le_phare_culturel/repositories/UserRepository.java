@@ -8,7 +8,5 @@ import fr.olprog_c.le_phare_culturel.entities.UserEntity;
 
 public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
-  Optional<UserEntity> findByUsername(String username);
-
   Optional<UserEntity> findByEmail(String email);
 }

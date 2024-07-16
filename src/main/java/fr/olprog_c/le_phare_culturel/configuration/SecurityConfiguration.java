@@ -40,7 +40,7 @@ public class SecurityConfiguration {
               request
                   .requestMatchers(
                       RouteDefinition.LOGIN_URL,
-                      RouteDefinition.LOGIN_REGISTER_URL,
+                      RouteDefinition.REGISTER_URL,
                       RouteDefinition.LOGOUT_URL,
                       RouteDefinition.LOGIN_RESET_PASSWORD_URL)
                   .permitAll()
@@ -55,14 +55,14 @@ public class SecurityConfiguration {
               response.setContentType("application/json;charset=UTF-8");
               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
               Map<String, ?> errors = Map.of("status", HttpServletResponse.SC_UNAUTHORIZED,
-                  "error_message", "Non autorisé");
+                  "error_message", "Non autorisé", "raw_message", authException.getMessage());
               response.getWriter().write(new ObjectMapper().writeValueAsString(errors));
             })
             .accessDeniedHandler((request, response, accessDeniedException) -> {
               response.setContentType("application/json;charset=UTF-8");
               response.setStatus(HttpServletResponse.SC_FORBIDDEN);
               Map<String, ?> errors = Map.of("status", HttpServletResponse.SC_FORBIDDEN,
-                  "error_message", "Accès interdit");
+                  "error_message", "Accès interdit", "raw_message", accessDeniedException.getMessage());
               response.getWriter().write(new ObjectMapper().writeValueAsString(errors));
             }))
         .build();
