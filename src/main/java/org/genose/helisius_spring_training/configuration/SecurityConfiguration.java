@@ -1,10 +1,11 @@
 package org.genose.helisius_spring_training.configuration;
 
-import org.genose.helisius_spring_training.controller.routes.BaseRoutesController;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
+import org.genose.helisius_spring_training.controller.routes.RouteDefinitions;
 import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,32 +13,35 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.List;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
-    private final JWTFilter JWTFilters;
+    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String BEARER_TOKEN_PREFIX = "Bearer";
+    public static final String COOKIE_TOKEN_NAME = "SessionChosenTokenJWT";
+    public static final String SET_COOKIE_HEADER = "Set-Cookie";
+    private final JWTFilter jwtFilters;
     protected Logger logger = LoggerFactory.getLogger(SecurityConfiguration.class);
 
     /* ****** ****** ****** ****** */
-    public SecurityConfiguration(@Qualifier("JWTFilter") JWTFilter jwtFilters) {
-        JWTFilters = jwtFilters;
+    public SecurityConfiguration(JWTFilter jwtFilters) {
+        this.jwtFilters = jwtFilters;
     }
 
     /* ****** ****** ****** ****** */
     @Bean
-    public JWTFilter jwtFilter(JWTService jwtService) {
-        return new JWTFilter(jwtService);
-    }
-
-    /* ****** ****** ****** ****** */
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        System.out.println(" Security chain called .... ");
         this.logger.info(
                 GNSClassStackUtils.getEnclosingClass()
                         + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this));
@@ -53,29 +57,29 @@ public class SecurityConfiguration {
                                         @PreAuthorize("hasRole('ROLE_USER')")
                                     * ****** ****** */
                                     .requestMatchers(
-                                            BaseRoutesController.LOGIN_GET_TEST_TOKEN_URL,
-                                            BaseRoutesController.LOGIN_URL,
-                                            BaseRoutesController.LOGIN_REGISTER_URL,
-                                            BaseRoutesController.LOGOUT_URL,
-                                            BaseRoutesController.LOGIN_RESET_PASSWORD_URL,
-                                            BaseRoutesController.LOGIN_FAILURE_URL,
-                                            BaseRoutesController.LOGIN_PASSWORD_FAILURE_URL
+                                            RouteDefinitions.LOGIN_GET_TEST_TOKEN_URL,
+                                            RouteDefinitions.LOGIN_URL,
+                                            RouteDefinitions.LOGIN_REGISTER_URL,
+                                            RouteDefinitions.LOGOUT_URL,
+                                            RouteDefinitions.LOGIN_RESET_PASSWORD_URL,
+                                            RouteDefinitions.LOGIN_FAILURE_URL,
+                                            RouteDefinitions.LOGIN_PASSWORD_FAILURE_URL
                                     ).permitAll()
                                     /* ****** ****** ****** ****** */
-                                    .requestMatchers(BaseRoutesController.GROUPS_URL + "/**").permitAll()
+                                    .requestMatchers(RouteDefinitions.GROUPS_URL + "/**").permitAll()
                                     /* ****** ****** ****** ****** */
-                                    .requestMatchers(BaseRoutesController.EVENTS_URL + "/**").permitAll()
+                                    .requestMatchers(RouteDefinitions.EVENTS_URL + "/**").permitAll()
                                     /* ****** ****** ****** ****** */
-                                    .requestMatchers("/").permitAll()
+                                    // .requestMatchers("/").permitAll()
                                     /* ****** ****** ****** ****** */
                                     .anyRequest()
-                            //        .authenticated()
+                                    .authenticated()
                             ;
                             /* ****** ****** ****** ****** */
                         }
                 )
-                /*.addFilterBefore(
-                        JWTFilters, UsernamePasswordAuthenticationFilter.class
+                .addFilterBefore(
+                        this.jwtFilters, UsernamePasswordAuthenticationFilter.class
                 ).sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -94,7 +98,7 @@ public class SecurityConfiguration {
                             Map<String, ?> errors = Map.of("status", HttpServletResponse.SC_FORBIDDEN,
                                     "error_message", "Accès interdit");
                             response.getWriter().write(new ObjectMapper().writeValueAsString(errors));
-                        }))*/
+                        }))
                 .build();
     }
 

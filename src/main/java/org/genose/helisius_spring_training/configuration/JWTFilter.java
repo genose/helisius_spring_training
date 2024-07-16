@@ -1,6 +1,5 @@
 package org.genose.helisius_spring_training.configuration;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -8,7 +7,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.genose.helisius_spring_training.entities.UsersEntity;
 import org.genose.helisius_spring_training.services.UsersService;
+import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -16,17 +17,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @Service
 public class JWTFilter extends OncePerRequestFilter {
-    private static final String HEADER_STRING = "Authorization";
-    private static final String TOKEN_PREFIX = "Bearer ";
-    private final org.genose.helisius_spring_training.configuration.JWTService JWTService;
+
+    private final JWTService jwtService;
     private UsersService userDetailsService;
 
-    public JWTFilter(JWTService JWTService) {
-        this.JWTService = JWTService;
+    public JWTFilter(JWTService jwtService) {
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -34,42 +33,59 @@ public class JWTFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        String token = null;
+        String jwtToken = null;
         String tokenFromCookie = null;
         String username = null;
+        Boolean isTokenExpired = true;
         try {
             final Cookie[] cookies = request.getCookies();
             /* ****** ****** ***** ****** */
             if (cookies != null) {
+                /* ****** ****** ***** ****** */
                 for (Cookie cookie : cookies) {
-                    if (cookie.getDomain().equals(response.getHeader("Host"))
-                            && cookie.getName().equals(org.genose.helisius_spring_training.configuration.JWTService.COOKIE_TOKEN_NAME)
+                    if (cookie.getName().equals(SecurityConfiguration.COOKIE_TOKEN_NAME)
+                        // && cookie.getDomain().equals(response.getHeader("Host"))
                     ) {
                         tokenFromCookie = cookie.getValue();
-
-                        if (tokenFromCookie != null
-                                && tokenFromCookie.startsWith(TOKEN_PREFIX)
-                                && tokenFromCookie.length() > TOKEN_PREFIX.length()
-                                && SecurityContextHolder.getContext().getAuthentication() == null
-                        ) {
-                            username = this.JWTService.extractUsername(tokenFromCookie);
-
-                            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-
-                        }
+                        logger.info("Found token from cookie: " + tokenFromCookie);
                         break;
                     }
                 }
+
+                /* ****** ****** ***** ****** */
+                if (tokenFromCookie != null) {
+
+                    isTokenExpired = this.jwtService.isTokenExpired(tokenFromCookie);
+                    username = this.jwtService.extractUsername(tokenFromCookie);
+                    logger.info("Found username: " + username);
+                    logger.info("Token is expired: " + isTokenExpired);
+                    if (!isTokenExpired
+                            && username != null
+                            && (SecurityContextHolder.getContext().getAuthentication() == null)) {
+
+                        UserDetails user = this.userDetailsService.loadUserByUsername(username);
+                        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                                new UsernamePasswordAuthenticationToken(
+                                        user, null,
+                                        user.getAuthorities()
+                                );
+                        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    }
+                    filterChain.doFilter(request, response);
+                }
+            } else {
+                throw new ServletException("No token found");
             }
             /* ****** ****** ***** ****** */
 
+           /* autre methode ....
             try {
                 if (tokenFromCookie == null) {
-                    token = request.getHeader(HEADER_STRING);
-                    if (token.startsWith(TOKEN_PREFIX)) {
-                        String jwtToken = token.replace(TOKEN_PREFIX, "");
+                    token = request.getHeader(SecurityConfiguration.HEADER_STRING);
+                    if (token.startsWith(SecurityConfiguration.BEARER_TOKEN_PREFIX)) {
+                        String jwtToken = token.replace(SecurityConfiguration.BEARER_TOKEN_PREFIX, "");
 
-                        Claims claims = JWTService.getDecodedTokenClaims(token);
+                        Claims claims = jwtService.getDecodedTokenClaims(token);
                         username = claims.getSubject();
                         if (username != null) {
                             Logger.getLogger(this.getClass().getSimpleName()).info(this.getClass() + " :: Tokenized User : " + username);
@@ -81,18 +97,20 @@ public class JWTFilter extends OncePerRequestFilter {
                 }
             } catch (Exception e) {
                 Logger.getLogger(this.getClass().getSimpleName()).info(this.getClass() + " :: Tokenized Error : " + e.getMessage());
-            }
-        } catch (Exception e) {
+            } */
 
-            if (username != null
-                    && !username.isEmpty()
-            ) {
+        } catch (Exception e) {
+            logger.error(this.getClass().getSimpleName() + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this) + " :: error :: " + e.getMessage());
+
+            if (username != null && !username.isEmpty()) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
                 // ... userDetails.getUsername();
                 UsersEntity userEntity = (UsersEntity) userDetails;
-                Map<String, String> tokenMap = JWTService.generateEncodedTokenFromUsersEntity(userEntity);
+                Map<String, String> tokenMap = jwtService.generateEncodedTokenFromUsersEntity(userEntity);
+
                 String newToken = tokenMap.get("token");
-                response.setHeader(HEADER_STRING, TOKEN_PREFIX + newToken);
+                response.setHeader(SecurityConfiguration.AUTHORIZATION_HEADER,
+                        SecurityConfiguration.BEARER_TOKEN_PREFIX + newToken);
 
             }
         }

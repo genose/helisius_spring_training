@@ -21,12 +21,12 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @DynamicUpdate
 public class UsersEntity extends BaseCommonEntity implements UserDetails {
 

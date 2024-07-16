@@ -19,8 +19,7 @@ import java.util.Map;
 
 @Service
 public class JWTService {
-    public static final String COOKIE_TOKEN_NAME = "SessionChosenTokenJWT";
-    public static final String BEARER_TOKEN = "Bearer ";
+
     @Value("#{${jwt-expiration:1440}* 60 * 1000}")
 
     private static Long tokenExpiration;
@@ -90,7 +89,7 @@ public class JWTService {
                 // .setExpiration(jwtExpirationDate)
                 .signWith(secretSigningKeyForJWT)
                 .compact();
-        this.encodedTokenWithBearer = Map.of(this.BEARER_TOKEN, localEncodedToken
+        this.encodedTokenWithBearer = Map.of(SecurityConfiguration.BEARER_TOKEN_PREFIX, localEncodedToken
                 , "ExpiresAt", jwtExpirationDate.toString()
         );
         return this.encodedTokenWithBearer;
@@ -99,12 +98,12 @@ public class JWTService {
     /* ****** ****** ****** ****** */
     public Claims getDecodedTokenClaims(String argToken) {
         String tokenToDecode = ((argToken != null && !argToken.isEmpty()) ?
-                argToken : this.encodedTokenWithBearer.getOrDefault(this.BEARER_TOKEN, "Nullable"));
+                argToken : this.encodedTokenWithBearer.getOrDefault(SecurityConfiguration.BEARER_TOKEN_PREFIX, "Nullable"));
 
         return (Claims) Jwts.parser()
                 .verifyWith(secretSigningKeyForJWT)
                 .build()
-                .parse(argToken)
+                .parse(tokenToDecode)
                 .getPayload();
     }
 

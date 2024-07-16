@@ -4,13 +4,4 @@
     <option name="defaultUnitInitialized" value="true" />
     <option name="renamerInitialized" value="true" />
   </component>
-  <component name="PersistenceUnitSettings">
-    <persistence-units>
-      <persistence-unit name="Default">
-        <packages>
-          <package value="org.genose.helisius_spring_training" />
-        </packages>
-      </persistence-unit>
-    </persistence-units>
-  </component>
 </project>

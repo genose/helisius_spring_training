@@ -10,7 +10,7 @@ public class GNSClassStackUtils {
 
     static public Class<?> getEnclosingClass() {
         Class currentClass = GNSClassStackUtils.class;
-
+        System.out.println(" EnclosingClass class: " + currentClass.getName());
         try {
             StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
             if (stackTrace.length > 1) {
