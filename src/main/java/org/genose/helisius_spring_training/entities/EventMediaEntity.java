@@ -15,7 +15,7 @@ import org.hibernate.validator.constraints.Length;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventsMediasEntity extends BaseCommonEntity {
+public class EventMediaEntity extends BaseCommonEntity {
 
     @Column(name = "media_url", nullable = false, length = 255)
     @Length(min = 12, max = 255)
@@ -29,6 +29,6 @@ public class EventsMediasEntity extends BaseCommonEntity {
 
     @ManyToOne
     @JoinColumn(name = "related_events_id", nullable = false)
-    private EventsEntity relatedEventsId;
+    private EventEntity relatedEventsId;
 }
 

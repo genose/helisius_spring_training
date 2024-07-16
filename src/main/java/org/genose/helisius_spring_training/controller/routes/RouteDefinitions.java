@@ -11,16 +11,16 @@ public class RouteDefinitions {
         @Preauthorize + ENUM
         @PreAuthorize("hasRole('ROLE_USER')")
     * ****** ****** */
-    final public static String EVENTS_URL = "/events";
-    final public static String GROUPS_URL = "/groups";
-    final public static String USERS_URL = "/users";
+    public static final String EVENTS_URL = "/events";
+    public static final String GROUPS_URL = "/groups";
+    public static final String USERS_URL = "/users";
+    public static final String AUTH_URL = "/auth";
     /* ****** ****** ****** ****** */
-    final public static String LOGIN_URL = USERS_URL + "/login";
-    final public static String LOGIN_REGISTER_URL = USERS_URL + "/users/login";
-    final public static String LOGOUT_URL = USERS_URL + "/logout";
-    final public static String LOGIN_RESET_PASSWORD_URL = USERS_URL + "/reset-password";
-    final public static String LOGIN_FAILURE_URL = USERS_URL + "/login-failure";
-    final public static String LOGIN_PASSWORD_FAILURE_URL = USERS_URL + "/reset-password-failure";
-    final public static String LOGIN_GET_TEST_TOKEN_URL = USERS_URL + "/token";
+    public static final String LOGIN_URL = AUTH_URL + "/login";
+    public static final String LOGOUT_URL = AUTH_URL + "/logout";
+    public static final String LOGIN_REGISTER_URL = AUTH_URL + "/register";
+    public static final String LOGIN_RESET_PASSWORD_URL = AUTH_URL + "/reset-password";
+
+    public static final String LOGIN_GET_TEST_TOKEN_URL = USERS_URL + "/token";
     /* ****** ****** ****** ****** */
 }

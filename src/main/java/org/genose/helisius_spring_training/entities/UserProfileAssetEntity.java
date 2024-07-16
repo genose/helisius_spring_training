@@ -1,6 +1,8 @@
 package org.genose.helisius_spring_training.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,13 +11,13 @@ import org.hibernate.validator.constraints.Length;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table( name = "user_profile_assets")
+@Table(name = "user_profile_assets")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsersProfileAssetsEntity extends BaseCommonEntity {
+public class UserProfileAssetEntity extends BaseCommonEntity {
 
-    @Column(name ="asset_uri" , nullable = false, unique = true, length = 50)
+    @Column(name = "asset_uri", nullable = false, unique = true, length = 50)
     @Length(min = 12, max = 50)
     private String assetUri;
 

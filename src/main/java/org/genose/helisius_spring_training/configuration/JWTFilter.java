@@ -1,12 +1,13 @@
 package org.genose.helisius_spring_training.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.genose.helisius_spring_training.entities.UsersEntity;
-import org.genose.helisius_spring_training.services.UsersService;
+import org.genose.helisius_spring_training.services.UserService;
 import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,10 +23,12 @@ import java.util.Map;
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;
-    private UsersService userDetailsService;
+    private final ObjectMapper objectMapper;
+    private UserService userDetailsService;
 
-    public JWTFilter(JWTService jwtService) {
+    public JWTFilter(JWTService jwtService, ObjectMapper objectMapper) {
         this.jwtService = jwtService;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -36,13 +39,16 @@ public class JWTFilter extends OncePerRequestFilter {
         String jwtToken = null;
         String tokenFromCookie = null;
         String username = null;
-        Boolean isTokenExpired = true;
+        boolean isTokenExpired = true;
         try {
+            logger.info(" ..... doFilterInternal .... ");
             final Cookie[] cookies = request.getCookies();
             /* ****** ****** ***** ****** */
             if (cookies != null) {
                 /* ****** ****** ***** ****** */
                 for (Cookie cookie : cookies) {
+                    logger.info("cookie : " + cookie.getName());
+
                     if (cookie.getName().equals(SecurityConfiguration.COOKIE_TOKEN_NAME)
                         // && cookie.getDomain().equals(response.getHeader("Host"))
                     ) {
@@ -71,11 +77,13 @@ public class JWTFilter extends OncePerRequestFilter {
                                 );
                         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                     }
-                    filterChain.doFilter(request, response);
+
                 }
             } else {
-                throw new ServletException("No token found");
+                logger.info("No Cookies Found for username");
+                // throw new ServletException("No token found");
             }
+            filterChain.doFilter(request, response);
             /* ****** ****** ***** ****** */
 
            /* autre methode ....
@@ -99,10 +107,21 @@ public class JWTFilter extends OncePerRequestFilter {
                 Logger.getLogger(this.getClass().getSimpleName()).info(this.getClass() + " :: Tokenized Error : " + e.getMessage());
             } */
 
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            Map<String, ?> errors = Map.of("status", HttpServletResponse.SC_UNAUTHORIZED, "error_message", "JWT expiré");
+            response.getWriter().write(objectMapper.writeValueAsString(errors));
             logger.error(this.getClass().getSimpleName() + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this) + " :: error :: " + e.getMessage());
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setContentType("application/json");
+            Map<String, ?> errors = Map.of("status", HttpServletResponse.SC_BAD_REQUEST, "error_message", "JWT invalide");
+            response.getWriter().write(objectMapper.writeValueAsString(errors));
+            logger.error(this.getClass().getSimpleName() + " :: " + GNSClassStackUtils.getEnclosingMethodObject(this) + " :: error :: " + e.getMessage());
+        }
 
-            if (username != null && !username.isEmpty()) {
+            /* if (username != null && !username.isEmpty()) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
                 // ... userDetails.getUsername();
                 UsersEntity userEntity = (UsersEntity) userDetails;
@@ -112,7 +131,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 response.setHeader(SecurityConfiguration.AUTHORIZATION_HEADER,
                         SecurityConfiguration.BEARER_TOKEN_PREFIX + newToken);
 
-            }
-        }
+            } */
+
     }
 }

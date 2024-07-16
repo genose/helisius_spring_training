@@ -1,8 +1,6 @@
 package org.genose.helisius_spring_training.repositories;
 
-import org.genose.helisius_spring_training.entities.EventsEntity;
-import org.genose.helisius_spring_training.entities.UsersEntity;
-import org.springframework.data.repository.CrudRepository;
+import org.genose.helisius_spring_training.entities.UserEntity;
 
-public interface EventsRepository extends BaseRepository<UsersEntity, Integer> {
+public interface EventsRepository extends BaseRepository<UserEntity, Integer> {
 }

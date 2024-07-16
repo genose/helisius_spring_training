@@ -59,12 +59,12 @@ public class SecurityConfiguration {
                                     .requestMatchers(
                                             RouteDefinitions.LOGIN_GET_TEST_TOKEN_URL,
                                             RouteDefinitions.LOGIN_URL,
-                                            RouteDefinitions.LOGIN_REGISTER_URL,
                                             RouteDefinitions.LOGOUT_URL,
-                                            RouteDefinitions.LOGIN_RESET_PASSWORD_URL,
-                                            RouteDefinitions.LOGIN_FAILURE_URL,
-                                            RouteDefinitions.LOGIN_PASSWORD_FAILURE_URL
+                                            RouteDefinitions.LOGIN_REGISTER_URL,
+                                            RouteDefinitions.LOGIN_RESET_PASSWORD_URL
                                     ).permitAll()
+                                    /* ****** ****** ****** ****** */
+                                    .requestMatchers(RouteDefinitions.USERS_URL + "/**").permitAll()
                                     /* ****** ****** ****** ****** */
                                     .requestMatchers(RouteDefinitions.GROUPS_URL + "/**").permitAll()
                                     /* ****** ****** ****** ****** */

@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(RouteDefinitions.GROUPS_URL)
-public class GroupsRoutesController extends BaseRoutesController {
-
+@RequestMapping(RouteDefinitions.EVENTS_URL)
+public class EventController extends BaseRoutesController {
+    
 }

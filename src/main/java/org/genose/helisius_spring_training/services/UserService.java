@@ -2,7 +2,7 @@ package org.genose.helisius_spring_training.services;
 
 import org.genose.helisius_spring_training.dtos.BaseGetResponseDTO;
 import org.genose.helisius_spring_training.dtos.UsersGetResponseDTO;
-import org.genose.helisius_spring_training.entities.UsersEntity;
+import org.genose.helisius_spring_training.entities.UserEntity;
 import org.genose.helisius_spring_training.repositories.UsersRepository;
 import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class UsersService extends BaseServiceImpl implements UserDetailsService {
+public class UserService extends BaseServiceImpl implements UserDetailsService {
     private final UsersRepository usersRepository;
 
-    public UsersService(UsersRepository usersRepository) {
+    public UserService(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
 
@@ -36,7 +36,7 @@ public class UsersService extends BaseServiceImpl implements UserDetailsService 
     @Override
     public Iterable<UsersGetResponseDTO> findAll() {
         return super.fetchAllEntitiesAndConvertToDto(
-                UsersEntity.class,
+                UserEntity.class,
                 BaseGetResponseDTO.class,
                 this.usersRepository.getClass());
         /*
@@ -51,7 +51,7 @@ public class UsersService extends BaseServiceImpl implements UserDetailsService 
     public Optional<UsersGetResponseDTO> findById(Integer id) {
         return super.findById(
                 id,
-                UsersEntity.class,
+                UserEntity.class,
                 UsersGetResponseDTO.class,
                 usersRepository
         );

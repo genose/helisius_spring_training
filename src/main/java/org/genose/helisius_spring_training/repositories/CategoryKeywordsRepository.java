@@ -1,8 +1,6 @@
 package org.genose.helisius_spring_training.repositories;
 
-import org.genose.helisius_spring_training.entities.EventsKeywordsCategoryEntity;
-import org.genose.helisius_spring_training.entities.UsersEntity;
-import org.springframework.data.repository.CrudRepository;
+import org.genose.helisius_spring_training.entities.UserEntity;
 
-public interface CategoryKeywordsRepository extends BaseRepository<UsersEntity, Integer> {
+public interface CategoryKeywordsRepository extends BaseRepository<UserEntity, Integer> {
 }

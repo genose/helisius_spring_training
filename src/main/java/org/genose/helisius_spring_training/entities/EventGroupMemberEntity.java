@@ -1,13 +1,11 @@
 package org.genose.helisius_spring_training.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.Collection;
@@ -19,7 +17,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 // @DynamicUpdate
-public class EventsGroupsUsersEntity extends BaseCommonEntity {
+public class EventGroupMemberEntity extends BaseCommonEntity {
 
     @Column(name = "group_name", nullable = false, unique = true, length = 50)
     @ColumnDefault("\"Nouveau Groupe\"")
@@ -28,14 +26,14 @@ public class EventsGroupsUsersEntity extends BaseCommonEntity {
 
     @OneToOne
     // @JsonProperty(value = "user_author_id")
-    private UsersEntity referencedUserAuthorId;
+    private UserEntity referencedUserAuthorId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "related_events_id")
-    private EventsEntity relatedEventsId;
+    private EventEntity relatedEventsId;
 
     // Apply map / filter in DTO to Obtain Users List
     @OneToMany(mappedBy = "relatedEventsGroupsId", orphanRemoval = true)
-    private Collection<EventsGroupsUsersMessagesEntity> referencedGroupsMessagesId;
+    private Collection<EventGroupMessageEntity> referencedGroupsMessagesId;
 
 }

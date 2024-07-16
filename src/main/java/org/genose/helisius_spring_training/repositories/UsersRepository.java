@@ -1,12 +1,12 @@
 package org.genose.helisius_spring_training.repositories;
 
-import org.genose.helisius_spring_training.entities.UsersEntity;
-import org.springframework.data.repository.CrudRepository;
+import org.genose.helisius_spring_training.entities.UserEntity;
 
 import java.util.Optional;
 
-public interface UsersRepository  extends BaseRepository<UsersEntity, Integer> {
+public interface UsersRepository extends BaseRepository<UserEntity, Integer> {
 
-    Optional<UsersEntity> findByUsername(String username);
-    Optional<UsersEntity> findByEmail(String email);
+    Optional<UserEntity> findByUsername(String username);
+
+    Optional<UserEntity> findByEmail(String email);
 }

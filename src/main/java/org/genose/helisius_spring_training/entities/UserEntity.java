@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.genose.helisius_spring_training.enums.UsersRolesEnum;
+import org.genose.helisius_spring_training.enums.UserRoleEnum;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -28,17 +28,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicUpdate
-public class UsersEntity extends BaseCommonEntity implements UserDetails {
+public class UserEntity extends BaseCommonEntity implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     // @Column(name = "role", nullable = false)
-    private UsersRolesEnum userRole;
+    private UserRoleEnum userRole;
 
     @Column(name = "profile_nickname", unique = true, nullable = false, length = 32)
     @ColumnDefault("\"New User nickname\"")
     @Length(min = 5, max = 32)
     private String profileNickname;
-    @Column(name = "profile_description", unique = true, nullable = false, length = 32)
+    @Column(name = "profile_description", unique = true, nullable = false, length = 320)
     @ColumnDefault("\"New User profiile description\"")
     @Length(min = 5, max = 320)
     private String profileDescription;
@@ -79,7 +79,7 @@ public class UsersEntity extends BaseCommonEntity implements UserDetails {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_assets_id")
-    private UsersProfileAssetsEntity userAssets;
+    private UserProfileAssetEntity userAssets;
 
     @JsonSerialize
     private Serializable encodedToken;

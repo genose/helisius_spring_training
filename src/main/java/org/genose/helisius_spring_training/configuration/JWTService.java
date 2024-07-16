@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
-import org.genose.helisius_spring_training.entities.UsersEntity;
+import org.genose.helisius_spring_training.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -62,7 +62,7 @@ public class JWTService {
     }
 
     /* ****** ****** ****** ****** */
-    public Map<String, String> generateEncodedTokenFromUsersEntity(UsersEntity argUser) {
+    public Map<String, String> generateEncodedTokenFromUsersEntity(UserEntity argUser) {
         generateEncodedToken(userDetailsService.loadUserByUsername(argUser.getEmail()));
         argUser.setEncodedToken(this.encodedTokenWithBearer.toString());
         return this.encodedTokenWithBearer;

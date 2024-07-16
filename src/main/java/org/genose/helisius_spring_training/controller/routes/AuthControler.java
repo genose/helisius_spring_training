@@ -5,10 +5,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.genose.helisius_spring_training.configuration.JWTService;
 import org.genose.helisius_spring_training.configuration.SecurityConfiguration;
-import org.genose.helisius_spring_training.entities.UsersEntity;
-import org.genose.helisius_spring_training.enums.UsersRolesEnum;
+import org.genose.helisius_spring_training.entities.UserEntity;
+import org.genose.helisius_spring_training.enums.UserRoleEnum;
 import org.genose.helisius_spring_training.repositories.UsersRepository;
-import org.genose.helisius_spring_training.services.UsersService;
+import org.genose.helisius_spring_training.services.UserService;
 import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -17,18 +17,17 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.MessageFormat;
 import java.util.Map;
 
 @RestController
+@RequestMapping(RouteDefinitions.USERS_URL)
 @Tag(name = RouteDefinitions.USERS_URL, description = "the user API")
-public class UsersRoutesController {
+public class AuthControler {
 
     /* ** SwaggerUI / OpenApi
         @Operation(summary = "Creates list of users with given input array", tags = { "user" })
@@ -40,24 +39,25 @@ public class UsersRoutesController {
         }
     ** */
 
-    private final UsersService usersService;
+    private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JWTService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final UsersRepository usersRepository;
 
-    public UsersRoutesController(UsersService usersService,
-                                 AuthenticationManager authenticationManager,
-                                 JWTService jwtService, PasswordEncoder passwordEncoder,
-                                 UsersRepository usersRepository) {
-        this.usersService = usersService;
+    public AuthControler(UserService userService,
+                         AuthenticationManager authenticationManager,
+                         JWTService jwtService,
+                         PasswordEncoder passwordEncoder,
+                         UsersRepository usersRepository) {
+        this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.usersRepository = usersRepository;
     }
 
-    @GetMapping(RouteDefinitions.LOGIN_GET_TEST_TOKEN_URL)
+    @GetMapping("/token")
     public ResponseEntity<?> getFakeToken() {
         System.out.println(" FakeToken Called .... ");
         GNSClassStackUtils.logger.info(
@@ -73,7 +73,7 @@ public class UsersRoutesController {
     }
 
     @PostMapping(RouteDefinitions.LOGIN_URL)
-    public ResponseEntity<?> getLogin(@Valid @RequestBody UsersEntity argUser,
+    public ResponseEntity<?> getLogin(@Valid @RequestBody UserEntity argUser,
                                       HttpServletResponse response) {
         try {
             GNSClassStackUtils.logger.info(
@@ -139,7 +139,7 @@ public class UsersRoutesController {
 
     /* ****** ****** ****** ****** */
     @PostMapping(RouteDefinitions.LOGIN_REGISTER_URL)
-    public ResponseEntity<?> register(@Valid @RequestBody UsersEntity argUser) {
+    public ResponseEntity<?> register(@Valid @RequestBody UserEntity argUser) {
         try {
             GNSClassStackUtils.logger.info("{0} :: {1} :: {2}",
                     GNSClassStackUtils.getEnclosingClass(),
@@ -147,7 +147,7 @@ public class UsersRoutesController {
                     argUser);
 
             argUser.setPassword(passwordEncoder.encode(argUser.getPassword()));
-            argUser.setUserRole(UsersRolesEnum.USER);
+            argUser.setUserRole(UserRoleEnum.USER);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             GNSClassStackUtils.logger.error(
@@ -157,6 +157,15 @@ public class UsersRoutesController {
                     e.getMessage());
         }
         return ResponseEntity.unprocessableEntity().build();
+    }
+
+    /* ****** ****** ****** ****** */
+    @PutMapping(RouteDefinitions.USERS_URL)
+    public ResponseEntity<?> put(@AuthenticationPrincipal UserEntity user) {
+        System.out.println(user);
+        user.setUserRole(UserRoleEnum.ADMIN);
+        usersRepository.save(user);
+        return ResponseEntity.ok().build();
     }
 
     /* ****** ****** ****** ****** */
