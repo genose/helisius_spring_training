@@ -1,44 +1,28 @@
 package org.genose.helisius_spring_training.services;
 
-import org.genose.helisius_spring_training.dtos.BaseGetResponseDTO;
-import org.genose.helisius_spring_training.dtos.UsersGetResponseDTO;
+import org.genose.helisius_spring_training.dtos.UserGetProfileDTO;
 import org.genose.helisius_spring_training.entities.UserEntity;
-import org.genose.helisius_spring_training.repositories.UsersRepository;
-import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.genose.helisius_spring_training.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class UserService extends BaseServiceImpl implements UserDetailsService {
-    private final UsersRepository usersRepository;
+public class UserService extends BaseServiceImpl {
 
-    public UserService(UsersRepository usersRepository) {
-        this.usersRepository = usersRepository;
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     /* ****** ****** ****** ****** */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        this.logger.info(GNSClassStackUtils.getEnclosingMethodObject(this) + " :: " + username);
-        if (username == null || username.isEmpty()) {
-            this.logger.error("{} :: Username is NULL ", GNSClassStackUtils.getEnclosingMethodObject(this));
-            throw new UsernameNotFoundException("username is null");
-        }
-        return this.usersRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("username is not found"));
-    }
-
-    /* ****** ****** ****** ****** */
-    @Override
-    public Iterable<UsersGetResponseDTO> findAll() {
+    public Iterable<UserGetProfileDTO> findAll() {
         return super.fetchAllEntitiesAndConvertToDto(
                 UserEntity.class,
-                BaseGetResponseDTO.class,
-                this.usersRepository.getClass());
+                UserGetProfileDTO.class,
+                this.userRepository.getClass());
         /*
         ..... EQUALS TO ....
         List<UsersEntity> entityList = (List<UsersEntity>) this.usersRepository.findAll();
@@ -48,12 +32,12 @@ public class UserService extends BaseServiceImpl implements UserDetailsService {
     }
 
     /* ****** ****** ****** ****** */
-    public Optional<UsersGetResponseDTO> findById(Integer id) {
+    public Optional<UserGetProfileDTO> findById(Integer id) {
         return super.findById(
                 id,
                 UserEntity.class,
-                UsersGetResponseDTO.class,
-                usersRepository
+                UserGetProfileDTO.class,
+                userRepository
         );
     }
 }

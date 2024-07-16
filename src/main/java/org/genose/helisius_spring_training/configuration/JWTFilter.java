@@ -7,7 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.genose.helisius_spring_training.services.UserService;
+import org.genose.helisius_spring_training.services.AuthentificationService;
 import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +24,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;
     private final ObjectMapper objectMapper;
-    private UserService userDetailsService;
+    private AuthentificationService userDetailsService;
 
     public JWTFilter(JWTService jwtService, ObjectMapper objectMapper) {
         this.jwtService = jwtService;

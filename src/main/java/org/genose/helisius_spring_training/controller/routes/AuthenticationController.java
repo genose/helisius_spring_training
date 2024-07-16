@@ -7,8 +7,8 @@ import org.genose.helisius_spring_training.configuration.JWTService;
 import org.genose.helisius_spring_training.configuration.SecurityConfiguration;
 import org.genose.helisius_spring_training.entities.UserEntity;
 import org.genose.helisius_spring_training.enums.UserRoleEnum;
-import org.genose.helisius_spring_training.repositories.UsersRepository;
-import org.genose.helisius_spring_training.services.UserService;
+import org.genose.helisius_spring_training.repositories.UserRepository;
+import org.genose.helisius_spring_training.services.AuthentificationService;
 import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -25,9 +25,9 @@ import java.text.MessageFormat;
 import java.util.Map;
 
 @RestController
-@RequestMapping(RouteDefinitions.USERS_URL)
-@Tag(name = RouteDefinitions.USERS_URL, description = "the user API")
-public class AuthControler {
+@RequestMapping(RouteDefinitions.AUTH_URL)
+@Tag(name = RouteDefinitions.AUTH_URL, description = "the user API")
+public class AuthenticationController {
 
     /* ** SwaggerUI / OpenApi
         @Operation(summary = "Creates list of users with given input array", tags = { "user" })
@@ -39,22 +39,22 @@ public class AuthControler {
         }
     ** */
 
-    private final UserService userService;
+    private final AuthentificationService authentificationService;
     private final AuthenticationManager authenticationManager;
     private final JWTService jwtService;
     private final PasswordEncoder passwordEncoder;
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
 
-    public AuthControler(UserService userService,
-                         AuthenticationManager authenticationManager,
-                         JWTService jwtService,
-                         PasswordEncoder passwordEncoder,
-                         UsersRepository usersRepository) {
-        this.userService = userService;
+    public AuthenticationController(AuthentificationService authentificationService,
+                                    AuthenticationManager authenticationManager,
+                                    JWTService jwtService,
+                                    PasswordEncoder passwordEncoder,
+                                    UserRepository userRepository) {
+        this.authentificationService = authentificationService;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
-        this.usersRepository = usersRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/token")
@@ -132,7 +132,6 @@ public class AuthControler {
             }
         } catch (BadCredentialsException badCredentialsException) {
             GNSClassStackUtils.logger.error("{} :: {} :: {}", GNSClassStackUtils.getEnclosingClass(), GNSClassStackUtils.getEnclosingMethodObject(this), badCredentialsException.getMessage());
-            GNSClassStackUtils.logger.error(badCredentialsException.getMessage(), badCredentialsException);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login Utilisateur inconnu");
     }
@@ -141,13 +140,14 @@ public class AuthControler {
     @PostMapping(RouteDefinitions.LOGIN_REGISTER_URL)
     public ResponseEntity<?> register(@Valid @RequestBody UserEntity argUser) {
         try {
-            GNSClassStackUtils.logger.info("{0} :: {1} :: {2}",
+            GNSClassStackUtils.logger.info("{} :: {} :: {}",
                     GNSClassStackUtils.getEnclosingClass(),
                     GNSClassStackUtils.getEnclosingMethodObject(this),
                     argUser);
 
             argUser.setPassword(passwordEncoder.encode(argUser.getPassword()));
             argUser.setUserRole(UserRoleEnum.USER);
+            userRepository.save(argUser);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             GNSClassStackUtils.logger.error(
@@ -164,7 +164,7 @@ public class AuthControler {
     public ResponseEntity<?> put(@AuthenticationPrincipal UserEntity user) {
         System.out.println(user);
         user.setUserRole(UserRoleEnum.ADMIN);
-        usersRepository.save(user);
+        userRepository.save(user);
         return ResponseEntity.ok().build();
     }
 

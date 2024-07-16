@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.genose.helisius_spring_training.utils.GNSJsonUtils;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -65,9 +64,9 @@ public class BaseGetResponseDTO extends BaseResponseRequestDTO {
     }
 
 
-    public <T extends BaseGetResponseDTO> T assignFromEntity(T fromEntity) {
+    /* public <T extends BaseGetResponseDTO> T assignFromEntity(T fromEntity) {
         this.id = fromEntity.getId();
         GNSJsonUtils.assignFromObject(fromEntity);
         return (T) this;
-    }
+    }*/
 }

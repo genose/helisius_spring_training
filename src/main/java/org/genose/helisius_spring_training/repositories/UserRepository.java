@@ -4,7 +4,7 @@ import org.genose.helisius_spring_training.entities.UserEntity;
 
 import java.util.Optional;
 
-public interface UsersRepository extends BaseRepository<UserEntity, Integer> {
+public interface UserRepository extends BaseRepository<UserEntity, Integer> {
 
     Optional<UserEntity> findByUsername(String username);
 
