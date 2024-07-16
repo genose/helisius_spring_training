@@ -1,101 +1,80 @@
 package org.genose.helisius_spring_training.configuration;
 
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.genose.helisius_spring_training.entities.UserEntity;
+import java.io.IOException;
+import java.util.Map;
+
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.logging.Logger;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class JWTFilter extends OncePerRequestFilter {
-	private static final String HEADER_STRING = "Authorization";
-	private static final String TOKEN_PREFIX = "Bearer ";
-	private final JWTService jwtService;
-	private UserDetailsService userDetailsService;
+  private final JWTService jwtService;
+  private final UserDetailsService userDetailsService;
 
-	public JWTFilter(JWTService jwtService) {
-		this.jwtService = jwtService;
-	}
+  private final ObjectMapper objectMapper;
 
+  public JWTFilter(JWTService jwtService, UserDetailsService userDetailsService, ObjectMapper objectMapper) {
+    this.jwtService = jwtService;
+    this.userDetailsService = userDetailsService;
+    this.objectMapper = objectMapper;
+  }
 
-	@Override
-	protected void doFilterInternal(@NonNull HttpServletRequest request,
-	                                @NonNull HttpServletResponse response,
-	                                @NonNull FilterChain filterChain)
-			throws ServletException, IOException {
-		String token = null;
-		String tokenFromCookie = null;
-		String username = null;
-		try {
-			final Cookie[] cookies = request.getCookies();
-			/* ****** ****** ***** ****** */
-			if (cookies != null) {
-				for (Cookie cookie : cookies) {
-					if (cookie.getDomain().equals(response.getHeader("Host"))
-							&& cookie.getName().equals(org.genose.helisius_spring_training.configuration.JWTService.COOKIE_TOKEN_NAME)
-					) {
-						tokenFromCookie = cookie.getValue();
+  @Override
+  protected void doFilterInternal(@NonNull HttpServletRequest request,
+      @NonNull HttpServletResponse response,
+      @NonNull FilterChain filterChain)
+      throws IOException {
 
-						if (tokenFromCookie != null
-								&& tokenFromCookie.startsWith(TOKEN_PREFIX)
-								&& tokenFromCookie.length() > TOKEN_PREFIX.length()
-								&& SecurityContextHolder.getContext().getAuthentication() == null
-						) {
-							username = this.jwtService.extractUsername(tokenFromCookie);
+    try {
+      String jwtToken = null;
+      boolean isTokenExpired = true;
+      String username = null;
 
-							UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+      final Cookie[] cookies = request.getCookies();
 
-						}
-						break;
-					}
-				}
-			}
-			/* ****** ****** ***** ****** */
+      if (cookies != null) {
+        for (Cookie cookie : cookies) {
+          if (cookie.getName().equals("token")) {
+            jwtToken = cookie.getValue();
+          }
+        }
+      }
+      if (jwtToken != null) {
+        isTokenExpired = jwtService.isTokenExpired(jwtToken);
+        username = jwtService.extractUsername(jwtToken);
+      }
 
-			try {
-				if (tokenFromCookie == null) {
-					token = request.getHeader(HEADER_STRING);
-					if (token.startsWith(TOKEN_PREFIX)) {
-						String jwtToken = token.replace(TOKEN_PREFIX, "");
+      if (!isTokenExpired && username != null && (SecurityContextHolder.getContext().getAuthentication() == null)) {
+        UserDetails user = userDetailsService.loadUserByUsername(username);
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+            user, null, user.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+      }
 
-						Claims claims = this.jwtService.getDecodedTokenClaims(token);
-						username = claims.getSubject();
-						if (username != null) {
-							Logger.getLogger(this.getClass().getSimpleName()).info(this.getClass() + " :: Tokenized User : " + username);
-						} else {
-							Logger.getLogger(this.getClass().getSimpleName()).info(this.getClass() + " :: NO Tokenized User : " + username);
-						}
-
-					}
-				}
-			} catch (Exception e) {
-				Logger.getLogger(this.getClass().getSimpleName()).info(this.getClass() + " :: Tokenized Error : " + e.getMessage());
-			}
-		} catch (Exception e) {
-
-			if (username != null
-					&& !username.isEmpty()
-			) {
-				UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-				// ... userDetails.getUsername();
-				UserEntity userEntity = (UserEntity) userDetails;
-				Map<String, String> tokenMap = this.jwtService.generateEncodedTokenFromUsersEntity(userEntity);
-				String newToken = tokenMap.get("token");
-				response.setHeader(HEADER_STRING, TOKEN_PREFIX + newToken);
-
-			}
-		}
-	}
+      filterChain.doFilter(request, response);
+    } catch (ExpiredJwtException e) {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      response.setContentType("application/json");
+      Map<String, ?> errors = Map.of("status", HttpServletResponse.SC_UNAUTHORIZED, "error_message", "JWT expiré");
+      response.getWriter().write(objectMapper.writeValueAsString(errors));
+    } catch (Exception e) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      response.setContentType("application/json");
+      Map<String, ?> errors = Map.of("status", HttpServletResponse.SC_BAD_REQUEST, "error_message", "JWT invalide");
+      response.getWriter().write(objectMapper.writeValueAsString(errors));
+    }
+  }
 }

@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class HelisiusSpringTrainingApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(HelisiusSpringTrainingApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(HelisiusSpringTrainingApplication.class, args);
+  }
 
 }

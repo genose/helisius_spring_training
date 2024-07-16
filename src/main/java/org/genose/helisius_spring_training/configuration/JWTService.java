@@ -1,26 +1,27 @@
 package org.genose.helisius_spring_training.configuration;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.Map;
+
+import javax.crypto.SecretKey;
+
+import org.genose.helisius_spring_training.entities.UserEntity;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Service;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import lombok.Getter;
-import org.genose.helisius_spring_training.entities.UserEntity;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Service;
-
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.Map;
 
 @Service
 public class JWTService {
-  public static final String COOKIE_TOKEN_NAME = "SessionChosenTokenJWT";
-  public static final String BEARER_TOKEN = "Bearer ";
+  public static final String COOKIE_TOKEN_NAME = "token";
 
   private final UserDetailsService userDetailsService;
 
@@ -28,9 +29,6 @@ public class JWTService {
   private Long tokenExpiration;
   @Value("${jwt-secret:keysecret}")
   private String secret;
-
-  @Getter
-  private Map<String, String> encodedTokenWithBearer;
 
   private SecretKey secretSigningKeyForJWT;
   private Map<String, Object> encodeClaims = null;
@@ -62,20 +60,15 @@ public class JWTService {
   }
 
   /* ****** ****** ****** ****** */
-  public Map<String, String> generateEncodedTokenFromUsersEntity(UserEntity argUser) {
-    generateEncodedToken(userDetailsService.loadUserByUsername(argUser.getEmail()));
-    argUser.setEncodedToken(this.encodedTokenWithBearer.toString());
-    return this.encodedTokenWithBearer;
-  }
-
-  /* ****** ****** ****** ****** */
   public Map<String, String> generateEncodedToken(UserDetails argUserDetails) {
     final Long jwtDateNow = System.currentTimeMillis();
     final Date jwtExpirationDate = new Date(jwtDateNow + tokenExpiration);
 
+    UserEntity user = (UserEntity) argUserDetails;
+
     this.encodeClaims = Map.of(
         "email", argUserDetails.getUsername(),
-        "roles", argUserDetails.getAuthorities(),
+        "roles", user.getUserRole(),
         Claims.EXPIRATION, jwtExpirationDate,
         Claims.ISSUED_AT, jwtDateNow,
         Claims.SUBJECT, argUserDetails.getUsername()
@@ -89,31 +82,20 @@ public class JWTService {
         // .setExpiration(jwtExpirationDate)
         .signWith(secretSigningKeyForJWT)
         .compact();
-    this.encodedTokenWithBearer = Map.of(BEARER_TOKEN, localEncodedToken, "ExpiresAt",
-        jwtExpirationDate.toString());
-    return this.encodedTokenWithBearer;
+    return Map.of(COOKIE_TOKEN_NAME, localEncodedToken);
   }
 
   /* ****** ****** ****** ****** */
   public Claims getDecodedTokenClaims(String argToken) {
-    String tokenToDecode = ((argToken != null && !argToken.isEmpty()) ? argToken
-        : this.encodedTokenWithBearer.getOrDefault(BEARER_TOKEN, "Nullable"));
+    if (argToken == null || argToken.isEmpty()) {
+      throw new BadCredentialsException("token invalid");
+    }
 
     return (Claims) Jwts.parser()
         .verifyWith(secretSigningKeyForJWT)
         .build()
         .parse(argToken)
         .getPayload();
-  }
-
-  /* ****** ****** ****** ****** */
-  public boolean isTokenValid(String argToken) {
-    try {
-      getDecodedTokenClaims(argToken);
-      return true;
-    } catch (JwtException e) {
-      return false;
-    }
   }
 
   /* ****** ****** ****** ****** */
