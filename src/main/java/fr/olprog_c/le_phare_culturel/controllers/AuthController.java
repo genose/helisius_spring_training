@@ -2,6 +2,8 @@ package fr.olprog_c.le_phare_culturel.controllers;
 
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpServerErrorException;
 
 import fr.olprog_c.le_phare_culturel.configuration.JWTService;
 import fr.olprog_c.le_phare_culturel.controllers.routes.RouteDefinition;
@@ -61,7 +64,11 @@ public class AuthController {
 
   @PostMapping(RouteDefinition.REGISTER_URL)
   public void register(@Valid @RequestBody AuthRegisterPostDTO dto) {
-    this.authService.register(dto);
+    if (dto.confirmPassword().equals(dto.password())) {
+      this.authService.register(dto);
+    } else {
+      throw new HttpServerErrorException(HttpStatus.PRECONDITION_REQUIRED, "Les mots de passes ne sont pas identiques");
+    }
   }
 
 }
