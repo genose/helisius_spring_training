@@ -37,6 +37,11 @@ public class AuthService {
   public void register(AuthRegisterPostDTO authRegisterPostDTO) throws HttpServerErrorException {
     try {
       UserEntity user = authDTOMapper.registerDtoToEntity(authRegisterPostDTO);
+
+      if (this.userRepository.existsByEmail(user.getEmail())) {
+        throw new HttpServerErrorException(HttpStatus.BAD_REQUEST, "Email déjà présent.");
+      }
+
       this.userRepository.save(user);
 
       ConfirmationTokenEntity token = new ConfirmationTokenEntity(user);

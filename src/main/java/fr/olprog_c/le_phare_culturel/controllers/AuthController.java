@@ -19,6 +19,7 @@ import fr.olprog_c.le_phare_culturel.configuration.JWTService;
 import fr.olprog_c.le_phare_culturel.controllers.routes.RouteDefinition;
 import fr.olprog_c.le_phare_culturel.dtos.AuthLoginPostDTO;
 import fr.olprog_c.le_phare_culturel.dtos.AuthRegisterPostDTO;
+import fr.olprog_c.le_phare_culturel.dtos.mapper.AuthDTOMapper;
 import fr.olprog_c.le_phare_culturel.entities.UserEntity;
 import fr.olprog_c.le_phare_culturel.services.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -53,7 +54,7 @@ public class AuthController {
             .build();
 
         response.addHeader("set-cookie", cookie.toString());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(AuthDTOMapper.responseDTO(user));
       }
 
     } catch (BadCredentialsException b) {
