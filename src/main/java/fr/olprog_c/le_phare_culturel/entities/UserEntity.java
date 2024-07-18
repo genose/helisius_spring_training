@@ -83,7 +83,7 @@ public class UserEntity extends BaseCommonEntity implements UserDetails {
   }
 
   public boolean isEnabled() {
-    return userEnabled;
+    return this.userEnabled;
   }
 
   @Override
@@ -93,11 +93,11 @@ public class UserEntity extends BaseCommonEntity implements UserDetails {
 
   @Override
   public boolean isAccountNonLocked() {
-    return ! userEnabled;// UserDetails.super.isAccountNonLocked();
+    return this.userEnabled;
   }
 
   public boolean isAccountNonExpired() {
-    return true;
+    return this.deletedDate == null;
   }
 
 }
