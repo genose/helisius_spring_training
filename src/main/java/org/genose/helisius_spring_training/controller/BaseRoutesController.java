@@ -1,9 +1,10 @@
-package org.genose.helisius_spring_training.controller.routes;
+package org.genose.helisius_spring_training.controller;
 
 
 import jakarta.persistence.MappedSuperclass;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.genose.helisius_spring_training.controller.routes.RouteDefinitions;
 import org.genose.helisius_spring_training.utils.GNSClassStackUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

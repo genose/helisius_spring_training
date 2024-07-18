@@ -1,7 +1,6 @@
 package org.genose.helisius_spring_training.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,17 +15,16 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @DynamicUpdate
 public class UserEntity extends BaseCommonEntity implements UserDetails {
 
@@ -77,12 +75,21 @@ public class UserEntity extends BaseCommonEntity implements UserDetails {
     @Length(min = 32, max = 128)
     private String email;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_assets_id")
-    private UserProfileAssetEntity userAssets;
+    /* ****** ****** ****** ****** */
+    // @OneToOne(fetch = FetchType.EAGER)
+    // @JoinColumn(name = "user_assets_id")
+    // @JsonProperty("avatar")
+    // private UserProfileAssetEntity userAssets;
+    /* ****** ****** ****** ****** */
+    @Column(nullable = false, length = 255)
+    @ColumnDefault(value = "\"/assets/images/avatars/avatar1.svg\"")
+    private String avatar;
+    /* ****** ****** ****** ****** */
 
-    @JsonSerialize
-    private Serializable encodedToken;
+    /* ****** ****** ****** ****** */
+    // @JsonSerialize
+    // private Serializable encodedToken;
+    /* ****** ****** ****** ****** */
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -112,7 +119,10 @@ public class UserEntity extends BaseCommonEntity implements UserDetails {
         return true;
     }
 
-    public void setEncodedToken(String localEncodedToken) {
-        this.encodedToken = localEncodedToken;
-    }
+    /* ****** ****** ****** ****** */
+    //  public void setEncodedToken(String localEncodedToken) {
+    //     this.encodedToken = localEncodedToken;
+    // }
+    /* ****** ****** ****** ****** */
+
 }

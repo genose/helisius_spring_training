@@ -36,6 +36,7 @@ public class EventEntity extends BaseCommonEntity {
     private LocalDate dateFin;
 
     @Column(nullable = false)
+    @ColumnDefault(value = "false")
     private boolean isActive;
 
     @OneToOne

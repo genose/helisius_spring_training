@@ -1,4 +1,4 @@
-package org.genose.helisius_spring_training.dto_mapper;
+package org.genose.helisius_spring_training.dtos.mapper;
 
 import org.genose.helisius_spring_training.mapper.BaseMapperEntity;
 

@@ -64,7 +64,7 @@ public class JWTService {
     /* ****** ****** ****** ****** */
     public Map<String, String> generateEncodedTokenFromUsersEntity(UserEntity argUser) {
         generateEncodedToken(userDetailsService.loadUserByUsername(argUser.getEmail()));
-        argUser.setEncodedToken(this.encodedTokenWithBearer.toString());
+        // argUser.setEncodedToken(this.encodedTokenWithBearer.toString());
         return this.encodedTokenWithBearer;
     }
 
