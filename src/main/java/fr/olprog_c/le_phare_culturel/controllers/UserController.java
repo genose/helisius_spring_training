@@ -1,8 +1,7 @@
 package fr.olprog_c.le_phare_culturel.controllers;
 
 import fr.olprog_c.le_phare_culturel.controllers.routes.RouteDefinition;
-import fr.olprog_c.le_phare_culturel.dtos.user.UserPostRequestAvatarDTO;
-import fr.olprog_c.le_phare_culturel.dtos.user.UserPostRequestPasswordDTO;
+import fr.olprog_c.le_phare_culturel.dtos.user.UserPostRequestDTO;
 import fr.olprog_c.le_phare_culturel.entities.UserEntity;
 import fr.olprog_c.le_phare_culturel.services.UserService;
 import jakarta.validation.Valid;
@@ -26,7 +25,6 @@ public class UserController {
     /* ******* ****** ****** ****** */
     @GetMapping(RouteDefinition.USER_PROFILE_URL)
     public ResponseEntity<?> getProfile(@AuthenticationPrincipal UserEntity user) {
-
         System.out.println("Received Get Request :" + user);
         return ResponseEntity.ok(userService.convertEntityToResponseDTO(user));
     }
@@ -34,11 +32,11 @@ public class UserController {
     /* ******* ****** ****** ****** */
     @PutMapping(RouteDefinition.USER_PROFILE_CHANGE_PASSWORD_URL)
     public ResponseEntity<?> putNewPassword(
-            @Valid @RequestBody UserPostRequestPasswordDTO body,
+            @Valid @RequestBody UserPostRequestDTO body,
             @AuthenticationPrincipal UserEntity user
     ) {
         System.out.println("Received Put Request :" + user);
-        if (userService.convertPasswordDtoToEntity(body, user).save()) {
+        if (userService.convertRequestDtoToEntity(body, user).save()) {
             return ResponseEntity.ok(userService.convertEntityToResponseDTO(user));
         }
         return ResponseEntity.unprocessableEntity().build();
@@ -47,11 +45,11 @@ public class UserController {
     /* ******* ****** ****** ****** */
     @PutMapping(RouteDefinition.USER_PROFILE_AVATAR_URL)
     public ResponseEntity<?> putNewAvatar(
-            @Valid @RequestBody UserPostRequestAvatarDTO body,
+            @Valid @RequestBody UserPostRequestDTO body,
             @AuthenticationPrincipal UserEntity user
     ) {
         System.out.println("Received Put Request :" + user);
-        if (userService.convertAvatarDtoToEntity(body, user).save()) {
+        if (userService.convertRequestDtoToEntity(body, user).save()) {
             return ResponseEntity.ok(userService.convertEntityToResponseDTO(user));
         }
         return ResponseEntity.unprocessableEntity().build();

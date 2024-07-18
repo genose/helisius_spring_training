@@ -1,75 +1,110 @@
 package fr.olprog_c.le_phare_culturel.services;
 
-import fr.olprog_c.le_phare_culturel.dtos.AuthLoginPostResponseDTO;
-import fr.olprog_c.le_phare_culturel.dtos.user.UserPostRequestAvatarDTO;
-import fr.olprog_c.le_phare_culturel.dtos.user.UserPostRequestPasswordDTO;
-import fr.olprog_c.le_phare_culturel.dtos.mapper.AuthDTOMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.olprog_c.le_phare_culturel.dtos.user.UserPostRequestDTO;
+import fr.olprog_c.le_phare_culturel.dtos.user.UserPostResponseDTO;
 import fr.olprog_c.le_phare_culturel.entities.UserEntity;
 import fr.olprog_c.le_phare_culturel.repositories.UserRepository;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Properties;
+import java.util.Optional;
 
 @Service
 public class UserService {
-    private final UserRepository userRepository;
+    private static UserRepository userRepository;
     /* ****** ****** utile Object.andThen(save()) ****** ****** */
     private static UserEntity userEntity;
-    /* ****** ****** ****** ****** */
+
+    /**
+     * UserService constructor
+     *
+     * @param userRepository The UserRepository to be used by this service
+     */
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    /* ****** ****** ****** ****** */
-    public AuthLoginPostResponseDTO convertEntityToResponseDTO(UserEntity user) {
-        return AuthDTOMapper.responseDTO(user);
+    /**
+     * Converts a UserEntity to UserPostResponseDTO
+     *
+     * @param user The user to be converted
+     * @return The converted UserPostResponseDTO
+     * @throws BadCredentialsException If the conversion fails
+     */
+    public UserPostResponseDTO convertEntityToResponseDTO(UserEntity user) {
+        try {
+            return (new  ObjectMapper()).convertValue(user, UserPostResponseDTO.class);
+        } catch (Exception e) {
+            throw new BadCredentialsException(" Erreur de conversion : " + e.getMessage());
+        }
     }
-    /* ****** ****** ****** ****** */
-    public UserService convertPasswordDtoToEntity(UserPostRequestPasswordDTO body, UserEntity user) {
+
+    /**
+     * Updates a UserEntity based on a UserPostRequestDTO
+     *
+     * @param body The request DTO containing the new user data
+     * @param user The entity to be updated
+     * @return This service, for chaining
+     * @throws BadCredentialsException If the old and new password are identical or the replacement password is different
+     */
+    public UserService convertRequestDtoToEntity(UserPostRequestDTO body, UserEntity user) {
         userEntity = user;
 
-        if (Objects.equals(AuthService.passwordEncoding(body.newPassword()), user.getPassword())) {
-            throw new BadCredentialsException("l ancien et le nouveau Mot de passe sont identiques");
-        }
-        if ((body.newPasswordConfirmation() != null && !body.newPasswordConfirmation().isEmpty())
-                && (body.newPassword() != null && !body.newPassword().isEmpty())
-                && (body.newPassword().equals(body.newPasswordConfirmation()))
+        // case of changing password
+        if ((body.newPassword() != null && !body.newPassword().isEmpty())
+                && (body.password() != null && !body.password().isEmpty())
         ) {
-
-            user.setEmail(body.email());
-            user.setPassword(AuthService.passwordEncoding(body.newPassword()));
+            if (Objects.equals(AuthService.passwordEncoding(body.newPassword()), user.getPassword())) {
+                throw new BadCredentialsException("l ancien et le nouveau Mot de passe sont identiques");
+            }
+            if (body.password().equals(body.newPassword())) {
+                user.setPassword(AuthService.passwordEncoding(body.newPassword()));
+            } else {
+                throw new BadCredentialsException("Mot de passe de remplacement different");
+            }
             // user.setUpdatedDate(LocalDateTime.now());
-        } else {
-            throw new BadCredentialsException("Mot de passe de remplacement different");
+        }
+        // case of profile profile description
+        if (body.firstName() != null && !body.firstName().isEmpty()) {
+            user.setFirstName(body.firstName());
+        }
+        if (body.lastName() != null && !body.lastName().isEmpty()) {
+            user.setLastName(body.lastName());
+        }
+        if (body.profileDescription() != null && !body.profileDescription().isEmpty()) {
+            user.setProfileDescription(body.profileDescription());
+        }
+        if (body.email() != null && !body.email().isEmpty()) {
+            user.setEmail(body.email());
+        }
+        if (body.profileNickname() != null && !body.profileNickname().isEmpty()) {
+            user.setProfileNickname(body.profileNickname());
+        }
+        if (body.avatar() != null && !body.avatar().isEmpty()) {
+            user.setAvatar(body.avatar());
+
         }
 
         return this;
     }
 
-    /* ****** ****** ****** ****** */
-    public UserService convertAvatarDtoToEntity(UserPostRequestAvatarDTO body, UserEntity user) {
-        userEntity = user;
-
-        if (body.avatar().isEmpty()) {
-            throw new BadCredentialsException("avatar is empty");
-        }
-        user.setAvatar(body.avatar());
-        // user.setUpdatedDate(LocalDateTime.now());
-        return this;
-    }
-
-    /* ****** ****** ****** ****** */
+    /**
+     * Saves the UserEntity to the database
+     *
+     * @return True if the user was successfully saved, false otherwise
+     */
     public boolean save() {
-        boolean saved = userRepository.save(userEntity) != null;
+        Optional<UserEntity> existingUserEntity = userRepository.findById(userEntity.getId());
+        boolean entityPresent = existingUserEntity.isPresent();
+        boolean saved = false;
+        if (entityPresent) {
+            UserEntity savedEntity = userRepository.save(userEntity);
+            if (!existingUserEntity.get().equals(savedEntity)) {
+                saved = true;
+            }
+        }
         userEntity = null;
         return saved;
     }
