@@ -4,6 +4,7 @@ import java.util.Map;
 
 import fr.olprog_c.le_phare_culturel.controllers.routes.RouteDefinition;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,11 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpServerErrorException;
 
 import fr.olprog_c.le_phare_culturel.configuration.JWTService;
+import fr.olprog_c.le_phare_culturel.controllers.routes.RouteDefinition;
 import fr.olprog_c.le_phare_culturel.dtos.AuthLoginPostDTO;
 import fr.olprog_c.le_phare_culturel.dtos.AuthRegisterPostDTO;
 import fr.olprog_c.le_phare_culturel.dtos.mapper.AuthDTOMapper;
 import fr.olprog_c.le_phare_culturel.entities.UserEntity;
 import fr.olprog_c.le_phare_culturel.services.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
@@ -44,15 +47,39 @@ public class AuthController {
           new UsernamePasswordAuthenticationToken(dto.email(), dto.password()));
       if (authenticate.isAuthenticated()) {
         UserEntity user = (UserEntity) authenticate.getPrincipal();
-        Map<String, String> token = jwtService.generateEncodedTokenForEmail(user.getEmail());
-        ResponseCookie cookie = ResponseCookie.from("token", token.get(JWTService.COOKIE_TOKEN_NAME))
+        Map<String, String> tokens = jwtService.generateTokensForEmail(user.getEmail());
+
+        ResponseCookie accessTokenCookie = ResponseCookie
+            .from(JWTService.ACCESS_TOKEN_NAME, tokens.get(JWTService.ACCESS_TOKEN_NAME))
             .httpOnly(true)
             .secure(true)
             .path("/")
-            .maxAge(7 * 24 * 60 * 60)
+            .maxAge(10 * 60)
             .build();
 
-        response.addHeader("set-cookie", cookie.toString());
+        ResponseCookie refreshTokenCookie = ResponseCookie
+            .from(JWTService.REFRESH_TOKEN_NAME, tokens.get(JWTService.REFRESH_TOKEN_NAME))
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(30 * 24 * 60 * 60)
+            .build();
+
+        response.addHeader("Set-Cookie", accessTokenCookie.toString());
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+
+        // Ajouter le token CSRF
+        // CsrfToken csrfToken = (CsrfToken) request.getAttribute("_csrf");
+        // ResponseCookie csrfCookie = ResponseCookie.from("XSRF-TOKEN",
+        // csrfToken.getToken())
+        // .httpOnly(false)
+        // .secure(true)
+        // .path("/")
+        // .maxAge(30 * 60)
+        // .build();
+
+        // response.addHeader("Set-Cookie", csrfCookie.toString());
+
         return ResponseEntity.ok(AuthDTOMapper.responseDTO(user));
       }
 
@@ -67,8 +94,36 @@ public class AuthController {
     if (dto.confirmPassword().equals(dto.password())) {
       this.authService.register(dto);
     } else {
-      throw new HttpServerErrorException(HttpStatus.PRECONDITION_REQUIRED, "Les mots de passes ne sont pas identiques");
+      throw new HttpServerErrorException(HttpStatus.PRECONDITION_REQUIRED, "Les mots de passe ne sont pas identiques");
     }
   }
 
+  @PostMapping("/auth/token/refresh")
+  public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+    String refreshToken = null;
+    for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
+      if (JWTService.REFRESH_TOKEN_NAME.equals(cookie.getName())) {
+        refreshToken = cookie.getValue();
+      }
+    }
+
+    if (refreshToken != null && jwtService.isTokenExpired(refreshToken)) {
+      String username = jwtService.extractUsername(refreshToken);
+      Map<String, String> tokens = jwtService.generateTokensForEmail(username);
+
+      ResponseCookie newAccessTokenCookie = ResponseCookie
+          .from(JWTService.ACCESS_TOKEN_NAME, tokens.get(JWTService.ACCESS_TOKEN_NAME))
+          .httpOnly(true)
+          .secure(true)
+          .path("/")
+          .maxAge(10 * 60)
+          .build();
+
+      response.addHeader("Set-Cookie", newAccessTokenCookie.toString());
+
+      return ResponseEntity.ok(Map.of("message", "Token refreshed"));
+    } else {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Invalid refresh token"));
+    }
+  }
 }
