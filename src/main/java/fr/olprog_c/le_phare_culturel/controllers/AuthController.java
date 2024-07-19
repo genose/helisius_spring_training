@@ -54,7 +54,7 @@ public class AuthController {
             .httpOnly(true)
             .secure(true)
             .path("/")
-            .maxAge(10 * 60)
+            .maxAge(10 * 60 * 60)
             .build();
 
         ResponseCookie refreshTokenCookie = ResponseCookie

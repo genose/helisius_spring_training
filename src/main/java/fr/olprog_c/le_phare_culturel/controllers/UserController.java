@@ -36,7 +36,7 @@ public class UserController {
    *         Object
    *         or error if not processed.
    */
-  @GetMapping(RouteDefinition.USER_PROFILE_URL)
+  @GetMapping(RouteDefinition.Users.PROFILE_URL)
   public ResponseEntity<?> getProfileInfo(@AuthenticationPrincipal UserEntity user) {
     System.out.println("Received Get Request :" + user);
     return ResponseEntity.ok(userService.convertEntityToResponseDTO(user));
@@ -59,7 +59,7 @@ public class UserController {
    *         successful update
    *         or an unprocessable entity status if the update fails.
    */
-  @PutMapping(RouteDefinition.USER_PROFILE_URL)
+  @PutMapping(RouteDefinition.Users.PROFILE_URL)
   public ResponseEntity<?> setProfileInfo(
       @Valid @RequestBody UserRequestDTO body,
       @AuthenticationPrincipal UserEntity user) {
@@ -80,7 +80,7 @@ public class UserController {
    *         Object
    *         or error if not processed.
    */
-  @PutMapping(RouteDefinition.USER_PROFILE_CHANGE_PASSWORD_URL)
+  @PutMapping(RouteDefinition.Users.CHANGE_PASSWORD_URL)
   public ResponseEntity<?> putNewPassword(
       @Valid @RequestBody UserNewPasswordPutRequestDTO body,
       @AuthenticationPrincipal UserEntity user) {
@@ -101,7 +101,7 @@ public class UserController {
    *         Object
    *         or error if not processed.
    */
-  @PutMapping(RouteDefinition.USER_PROFILE_AVATAR_URL)
+  @PutMapping(RouteDefinition.Users.AVATAR_URL)
   public ResponseEntity<?> putNewAvatar(
       @Valid @RequestBody UserAvatarPutRequestDTO body,
       @AuthenticationPrincipal UserEntity user) {
