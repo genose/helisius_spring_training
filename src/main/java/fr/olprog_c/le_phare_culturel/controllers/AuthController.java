@@ -54,7 +54,7 @@ public class AuthController {
             .httpOnly(true)
             .secure(true)
             .path("/")
-            .maxAge(10 * 60 * 60)
+            .maxAge(30)
             .build();
 
         ResponseCookie refreshTokenCookie = ResponseCookie
@@ -62,7 +62,7 @@ public class AuthController {
             .httpOnly(true)
             .secure(true)
             .path("/")
-            .maxAge(30 * 24 * 60 * 60)
+            .maxAge(10 * 60 * 60)
             .build();
 
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
@@ -107,7 +107,7 @@ public class AuthController {
       }
     }
 
-    if (refreshToken != null && jwtService.isTokenExpired(refreshToken)) {
+    if (refreshToken != null && !jwtService.isTokenExpired(refreshToken)) {
       String username = jwtService.extractUsername(refreshToken);
       Map<String, String> tokens = jwtService.generateTokensForEmail(username);
 

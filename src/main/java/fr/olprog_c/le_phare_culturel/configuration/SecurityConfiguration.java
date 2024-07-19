@@ -59,6 +59,7 @@ public class SecurityConfiguration {
                 RouteDefinition.Users.PROFILE_URL,
                 RouteDefinition.Users.CHANGE_PASSWORD_URL,
                 // RouteDefinition.Users.AVATAR_URL,
+                "/auth/token/refresh",
                 /* ****** ****** ****** ****** */
                 // RouteDefinition.Events.EVENTS_URL,
                 // RouteDefinition.Events.EVENTS_WITH_ID_URL,
