@@ -1,7 +1,8 @@
 package fr.olprog_c.le_phare_culturel.controllers;
 
 import fr.olprog_c.le_phare_culturel.controllers.routes.RouteDefinition;
-import fr.olprog_c.le_phare_culturel.dtos.user.UserPostRequestDTO;
+import fr.olprog_c.le_phare_culturel.dtos.user.UserNewPasswordPutRequestDTO;
+import fr.olprog_c.le_phare_culturel.dtos.user.UserAvatarPutRequestDTO;
 import fr.olprog_c.le_phare_culturel.entities.UserEntity;
 import fr.olprog_c.le_phare_culturel.services.UserService;
 import jakarta.validation.Valid;
@@ -36,7 +37,10 @@ public class UserController {
     @GetMapping(RouteDefinition.Users.PROFILE_URL)
     public ResponseEntity<?> getProfile(@AuthenticationPrincipal UserEntity user) {
         System.out.println("Received Get Request :" + user);
-        return ResponseEntity.ok(userService.convertEntityToResponseDTO(user));
+        if (userService.convertRequestDtoToEntity(body, user).save()) {
+            return ResponseEntity.ok(userService.convertEntityToResponseDTO(user));
+        }
+        return ResponseEntity.unprocessableEntity().build();
     }
 
     /**

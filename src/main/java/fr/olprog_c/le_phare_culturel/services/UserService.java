@@ -52,7 +52,6 @@ public class UserService {
      * @throws BadCredentialsException If the old and new password are identical or the replacement password is different
      */
     public UserService convertRequestDtoToEntity(UserRequestDTO requestDTO, UserEntity user) {
-        userEntity = user;
 
         // case of changing password
         if ((requestDTO.newPassword() != null && !requestDTO.newPassword().isEmpty())
@@ -89,6 +88,7 @@ public class UserService {
 
         }
 
+        userEntity = user;
         return this;
     }
 
