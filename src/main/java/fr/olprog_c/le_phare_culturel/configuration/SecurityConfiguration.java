@@ -3,6 +3,7 @@ package fr.olprog_c.le_phare_culturel.configuration;
 import java.util.List;
 import java.util.Map;
 
+import fr.olprog_c.le_phare_culturel.controllers.routes.RouteDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,47 +33,56 @@ public class SecurityConfiguration {
     jwtFilter = jWTFilters;
   }
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    return http
-        // .csrf(csrf ->
-        // csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-        .csrf(AbstractHttpConfigurer::disable)
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .authorizeHttpRequests(
-            request -> {
-              request
-                  .requestMatchers(
-                      RouteDefinition.LOGIN_URL,
-                      RouteDefinition.REGISTER_URL,
-                      RouteDefinition.LOGOUT_URL,
-                      RouteDefinition.CONFIRM_EMAIL,
-                      RouteDefinition.LOGIN_RESET_PASSWORD_URL)
-                  .permitAll()
-                  .anyRequest().authenticated();
-            })
-        .addFilterBefore(
-            jwtFilter, UsernamePasswordAuthenticationFilter.class)
-        .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .exceptionHandling(exception -> exception
-            .authenticationEntryPoint((request, response, authException) -> {
-              response.setContentType("application/json;charset=UTF-8");
-              response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-              Map<String, ?> errors = Map.of("status", HttpServletResponse.SC_UNAUTHORIZED,
-                  "error_message", "Non autorisé", "raw_message", authException.getMessage());
-              response.getWriter().write(new ObjectMapper().writeValueAsString(errors));
-            })
-            .accessDeniedHandler((request, response, accessDeniedException) -> {
-              response.setContentType("application/json;charset=UTF-8");
-              response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-              Map<String, ?> errors = Map.of("status", HttpServletResponse.SC_FORBIDDEN,
-                  "error_message", "Accès interdit", "raw_message",
-                  accessDeniedException.getMessage());
-              response.getWriter().write(new ObjectMapper().writeValueAsString(errors));
-            }))
-        .build();
-  }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http.csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(
+                        request -> {
+                            request
+                                    .requestMatchers(
+                                            RouteDefinition.Auth.LOGIN_URL,
+                                            RouteDefinition.Auth.LOGOUT_URL,
+                                            // RouteDefinition.Auth.REGISTER_URL,
+                                            // RouteDefinition.Auth.EMAIL_CONFIRMATION_URL,
+                                            /* ****** ****** ****** ****** */
+                                            RouteDefinition.Users.PROFILE_URL,
+                                            RouteDefinition.Users.CHANGE_PASSWORD_URL,
+                                            RouteDefinition.Users.AVATAR_URL,
+                                            /* ****** ****** ****** ****** */
+                                            // RouteDefinition.Events.EVENTS_URL,
+                                            // RouteDefinition.Events.FILTER_URL,
+                                            // RouteDefinition.Events.TAGS_URL,
+                                            // RouteDefinition.Events.TAGS_FILTER_URL,
+                                            /* ****** ****** ****** ****** */
+                                            RouteDefinition.Groups.TAGS_URL
+
+                                            )
+                                    .permitAll()
+                                    .anyRequest().authenticated();
+                        })
+                .addFilterBefore(
+                        jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            Map<String, ?> errors = Map.of("status", HttpServletResponse.SC_UNAUTHORIZED,
+                                    "error_message", "Non autorisé", "raw_message", authException.getMessage());
+                            response.getWriter().write(new ObjectMapper().writeValueAsString(errors));
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            Map<String, ?> errors = Map.of("status", HttpServletResponse.SC_FORBIDDEN,
+                                    "error_message", "Accès interdit", "raw_message",
+                                    accessDeniedException.getMessage());
+                            response.getWriter().write(new ObjectMapper().writeValueAsString(errors));
+                        }))
+                .build();
+    }
 
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
