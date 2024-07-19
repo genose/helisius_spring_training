@@ -80,9 +80,9 @@ public class EventService {
      * @return List of EventEntityGETResponseDTO.
      */
     public List<EventEntityResponseDTO> findAllByFiltering(int pageNumber, int pageSize, Map<String, String> filters) {
-        pageNumber = Math.max(pageNumber, 0);
+        pageNumber = Math.max(pageNumber, EventParametersConstants.DEFAULT_PAGE_OFFSET.getIntegerValue());
         pageSize = Math.max(pageSize, EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
-        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id").descending());
 
         final Specification<EventEntity> filtersSpecificationPredicates =
                 EventFiltersSpecification.getFiltersSpecificationPredicates(filters);

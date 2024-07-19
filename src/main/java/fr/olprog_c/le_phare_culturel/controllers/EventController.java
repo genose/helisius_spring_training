@@ -44,6 +44,14 @@ public class EventController {
         System.out.println("Receive GET Events ID for Group List : " + eventid);
         // ROOT NODE
         EventEntityResponseDTO responseDTO = new EventEntityResponseDTO();
+
+        responseDTO.setTitle("Event " + (new Random())
+                .ints(127, 1826)
+                .findFirst().getAsInt());
+
+        responseDTO.setDateDebut((new Date()).toString());
+        responseDTO.setDateFin((new Date()).toString());
+
         responseDTO.setId((new Random())
                 .ints(127, 1826)
                 .findFirst().getAsInt()
@@ -106,6 +114,13 @@ public class EventController {
 
         EventInfoResponseDTO eventInfoResponseDTO = new EventInfoResponseDTO();
 
+         responseDTO.setTitle("Event " + (new Random())
+                .ints(127, 1826)
+                .findFirst().getAsInt());
+        responseDTO.setDateDebut((new Date()).toString());
+        responseDTO.setDateFin((new Date()).toString());
+
+
         EventCategoryDescriptor eventCategory = new EventCategoryDescriptor();
         List<EventCategoryDescriptor> categoryDescriptorList = new ArrayList<EventCategoryDescriptor>();
 
@@ -131,6 +146,14 @@ public class EventController {
     public EventEntityResponseDTO getEventByIDGroupByID(@PathVariable int eventid, @PathVariable int groupid) {
         System.out.println("Receive GET Events ID for Group ID : " + eventid + " :: " + groupid);
         EventEntityResponseDTO responseDTO = new EventEntityResponseDTO();
+
+         responseDTO.setTitle("Event " + (new Random())
+                .ints(127, 1826)
+                .findFirst().getAsInt());
+        responseDTO.setDateDebut((new Date()).toString());
+        responseDTO.setDateFin((new Date()).toString());
+
+
         responseDTO.setId((new Random())
                 .ints(127, 1826)
                 .findFirst().getAsInt()
@@ -159,6 +182,14 @@ public class EventController {
         /* ****** ****** ****** ****** */
 
         EventInfoResponseDTO eventInfoResponseDTO = new EventInfoResponseDTO();
+
+         responseDTO.setTitle("Event " + (new Random())
+                .ints(127, 1826)
+                .findFirst().getAsInt());
+        responseDTO.setDateDebut((new Date()).toString());
+        responseDTO.setDateFin((new Date()).toString());
+
+
         eventInfoResponseDTO.setParticipantsGroups(groupParticipant);
         // SET SUBNODE CONTAINING ALL INFORMATION FORMAT
 
@@ -184,9 +215,9 @@ public class EventController {
      */
     @GetMapping(value = RouteDefinition.Events.EVENTS_URL)
     public List<EventEntityResponseDTO> getAllEventsWithFiltering(@RequestParam Map<String, String> filters) {
-        System.out.println("Receive GET Events filters : " + filters);
         int pageNumber = (filters.containsKey(EventParametersConstants.PAGE_NUMBER.getStringValue()) ? Integer.parseInt(filters.get(EventParametersConstants.PAGE_NUMBER.getStringValue())) : 0);
         int pageSize = (filters.containsKey(EventParametersConstants.PAGE_SIZE.getStringValue()) ? Integer.parseInt(filters.get(EventParametersConstants.PAGE_SIZE.getStringValue())) : EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
+        System.out.println("Receive GET Events filters : " + filters + " :: pageNumber" + pageNumber + " :: pageSize :: " + pageSize);
 
         return eventService.findAllByFiltering(pageNumber, pageSize, filters);
     }
@@ -202,9 +233,9 @@ public class EventController {
     public List<EventEntityResponseDTO> getEventsFromFilteringTags(
             @PathVariable(required = false, name = "tags") String tags,
             @RequestParam Map<String, String> filters) {
-        System.out.println("Receive GET Events : " + tags + " :: " + filters);
         int pageNumber = (filters.containsKey(EventParametersConstants.PAGE_NUMBER.getStringValue()) ? Integer.parseInt(filters.get(EventParametersConstants.PAGE_NUMBER.getStringValue())) : 0);
         int pageSize = (filters.containsKey(EventParametersConstants.PAGE_SIZE.getStringValue()) ? Integer.parseInt(filters.get(EventParametersConstants.PAGE_SIZE.getStringValue())) : EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
+        System.out.println("Receive GET Events TAGS filters : " + filters + " :: pageNumber" + pageNumber + " :: pageSize :: " + pageSize);
 
         return eventService.findAllByFiltering(pageNumber, pageSize, filters);
     }
@@ -221,9 +252,10 @@ public class EventController {
     public List<EventEntityResponseDTO> getEventsFromFiltering(
             @PathVariable(required = false, name = "filters") String tagsFilter,
             @RequestParam Map<String, String> filters) {
-        System.out.println("Receive GET Events filters : " + tagsFilter + " :: " + filters);
+
         int pageNumber = (filters.containsKey(EventParametersConstants.PAGE_NUMBER.getStringValue()) ? Integer.parseInt(filters.get(EventParametersConstants.PAGE_NUMBER.getStringValue())) : 0);
         int pageSize = (filters.containsKey(EventParametersConstants.PAGE_SIZE.getStringValue()) ? Integer.parseInt(filters.get(EventParametersConstants.PAGE_SIZE.getStringValue())) : EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
+        System.out.println("Receive GET Events filters : " + tagsFilter + " :: " + filters + " :: pageNumber" + pageNumber + " :: pageSize :: " + pageSize);
 
         return eventService.findAllByFiltering(pageNumber, pageSize, filters);
     }

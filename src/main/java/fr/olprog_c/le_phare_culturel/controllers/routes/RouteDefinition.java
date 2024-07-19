@@ -26,9 +26,7 @@ public final class RouteDefinition {
     public static class Events {
         public static final String EVENTS_URL = "/events";
         public static final String EVENTS_WITH_ID_URL = EVENTS_URL+"/{eventid}";
-
         public static final String EVENTS_WITH_ID_GROUP_WITH_ID_URL = EVENTS_URL+"/{eventid}/"+Groups.GROUPS_WITH_ID_URL;
-
         public static final String EVENTS_WITH_ID_GROUP_LIST_URL= EVENTS_URL+"/{eventid}/"+Groups.GROUPS_URL;
 
         public static final String TAGS_URL = EVENTS_URL + "/tags/{filters}";

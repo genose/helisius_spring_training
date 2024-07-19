@@ -5,10 +5,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class EventEntityResponseDTO {
     private int id;
     private String uid;
+    private String title;
     private String slug;
     private String description;
     private String descriptionLongFr;
     private EventImagesDTO images;
+
+    @JsonProperty("start")
+    private String dateDebut;
+
+    @JsonProperty("end")
+    private String dateFin;
+
+    private EventColorDescriptor backgroundColor;
+
     private EventDateInformationDTO eventDateInformationDTO;
     private EventInfoResponseDTO info;
 
@@ -42,6 +52,14 @@ public class EventEntityResponseDTO {
         this.slug = value;
     }
 
+    @JsonProperty("title")
+    public String getTitle() {
+        return title;
+    }
+    @JsonProperty("title")
+    public void setTitle(String title) {
+        this.title = title;
+    }
     @JsonProperty("description")
     public String getDescription() {
         return description;
@@ -93,6 +111,34 @@ public class EventEntityResponseDTO {
         this.eventDateInformationDTO = value;
     }
 
+    @JsonProperty("start")
+    public String getDateDebut() {
+        return dateDebut;
+    }
+
+    @JsonProperty("start")
+    public void setDateDebut(String dateDebut) {
+        this.dateDebut = dateDebut;
+    }
+
+    @JsonProperty("end")
+    public String getDateFin() {
+        return dateFin;
+    }
+    @JsonProperty("end")
+    public void setDateFin(String dateFin) {
+        this.dateFin = dateFin;
+    }
+
+    @JsonProperty("backgroundColor")
+    public EventColorDescriptor getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    @JsonProperty("backgroundColor")
+    public void setBackgroundColor(EventColorDescriptor backgroundColor) {
+        this.backgroundColor = backgroundColor;
+    }
 }
 
 
