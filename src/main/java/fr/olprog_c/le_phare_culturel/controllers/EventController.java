@@ -5,6 +5,7 @@ import fr.olprog_c.le_phare_culturel.controllers.routes.RouteDefinition;
 import fr.olprog_c.le_phare_culturel.dtos.event.*;
 import fr.olprog_c.le_phare_culturel.services.EventService;
 import jdk.jfr.Event;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,9 +29,9 @@ public class EventController {
      * @return The fetched EventEntityResponseDTO.
      */
     @GetMapping(value = RouteDefinition.Events.EVENTS_WITH_ID_URL)
-    public EventEntityResponseDTO getEventsByID(@PathVariable int eventid) {
+    public ResponseEntity<EventEntityResponseDTO> getEventsByID(@PathVariable int eventid) {
         System.out.println("Receive GET Events ID : " + eventid);
-        return eventService.findByID(eventid);
+        return ResponseEntity.ok(eventService.findByID(eventid));
     }
 
     /**
@@ -40,7 +41,7 @@ public class EventController {
      * @return An empty {@link EventEntityResponseDTO} object.
      */
     @GetMapping(value = RouteDefinition.Events.EVENTS_WITH_ID_GROUP_LIST_URL)
-    public EventEntityResponseDTO getEventByIDGroupList(@PathVariable int eventid) {
+    public ResponseEntity<EventEntityResponseDTO> getEventByIDGroupList(@PathVariable int eventid) {
         System.out.println("Receive GET Events ID for Group List : " + eventid);
         // ROOT NODE
         EventEntityResponseDTO responseDTO = new EventEntityResponseDTO();
@@ -132,7 +133,7 @@ public class EventController {
         eventInfoResponseDTO.setParticipantsGroups(groupParticipant);
         // SET SUBNODE CONTAINING ALL INFORMATION FORMAT
         responseDTO.setInfo(eventInfoResponseDTO);
-        return responseDTO;
+        return ResponseEntity.ok(responseDTO);
     }
 
     /**
@@ -143,7 +144,7 @@ public class EventController {
      * @return An empty {@link EventEntityResponseDTO} object.
      */
     @GetMapping(value = RouteDefinition.Events.EVENTS_WITH_ID_GROUP_WITH_ID_URL)
-    public EventEntityResponseDTO getEventByIDGroupByID(@PathVariable int eventid, @PathVariable int groupid) {
+    public ResponseEntity<EventEntityResponseDTO> getEventByIDGroupByID(@PathVariable int eventid, @PathVariable int groupid) {
         System.out.println("Receive GET Events ID for Group ID : " + eventid + " :: " + groupid);
         EventEntityResponseDTO responseDTO = new EventEntityResponseDTO();
 
@@ -204,7 +205,7 @@ public class EventController {
 
 
         responseDTO.setInfo(eventInfoResponseDTO);
-        return responseDTO;
+        return ResponseEntity.ok(responseDTO);
     }
 
     /**
@@ -214,12 +215,12 @@ public class EventController {
      * @return A list of filtered EventEntityResponseDTO.
      */
     @GetMapping(value = RouteDefinition.Events.EVENTS_URL)
-    public List<EventEntityResponseDTO> getAllEventsWithFiltering(@RequestParam Map<String, String> filters) {
+    public ResponseEntity<List<EventEntityResponseDTO>> getAllEventsWithFiltering(@RequestParam Map<String, String> filters) {
         int pageNumber = (filters.containsKey(EventParametersConstants.PAGE_NUMBER.getStringValue()) ? Integer.parseInt(filters.get(EventParametersConstants.PAGE_NUMBER.getStringValue())) : 0);
         int pageSize = (filters.containsKey(EventParametersConstants.PAGE_SIZE.getStringValue()) ? Integer.parseInt(filters.get(EventParametersConstants.PAGE_SIZE.getStringValue())) : EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
         System.out.println("Receive GET Events filters : " + filters + " :: pageNumber" + pageNumber + " :: pageSize :: " + pageSize);
 
-        return eventService.findAllByFiltering(pageNumber, pageSize, filters);
+        return ResponseEntity.ok(eventService.findAllByFiltering(pageNumber, pageSize, filters));
     }
 
     /**
@@ -230,14 +231,14 @@ public class EventController {
      * @return A list of filtered EventEntityResponseDTO.
      */
     @GetMapping(RouteDefinition.Events.TAGS_URL)
-    public List<EventEntityResponseDTO> getEventsFromFilteringTags(
+    public ResponseEntity<List<EventEntityResponseDTO>> getEventsFromFilteringTags(
             @PathVariable(required = false, name = "tags") String tags,
             @RequestParam Map<String, String> filters) {
         int pageNumber = (filters.containsKey(EventParametersConstants.PAGE_NUMBER.getStringValue()) ? Integer.parseInt(filters.get(EventParametersConstants.PAGE_NUMBER.getStringValue())) : 0);
         int pageSize = (filters.containsKey(EventParametersConstants.PAGE_SIZE.getStringValue()) ? Integer.parseInt(filters.get(EventParametersConstants.PAGE_SIZE.getStringValue())) : EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
         System.out.println("Receive GET Events TAGS filters : " + filters + " :: pageNumber" + pageNumber + " :: pageSize :: " + pageSize);
 
-        return eventService.findAllByFiltering(pageNumber, pageSize, filters);
+        return ResponseEntity.ok(eventService.findAllByFiltering(pageNumber, pageSize, filters));
     }
 
     /**
@@ -249,7 +250,7 @@ public class EventController {
      * @return A list of filtered EventEntityResponseDTO.
      */
     @GetMapping(RouteDefinition.Events.FILTER_URL)
-    public List<EventEntityResponseDTO> getEventsFromFiltering(
+    public ResponseEntity<List<EventEntityResponseDTO>> getEventsFromFiltering(
             @PathVariable(required = false, name = "filters") String tagsFilter,
             @RequestParam Map<String, String> filters) {
 
@@ -257,6 +258,6 @@ public class EventController {
         int pageSize = (filters.containsKey(EventParametersConstants.PAGE_SIZE.getStringValue()) ? Integer.parseInt(filters.get(EventParametersConstants.PAGE_SIZE.getStringValue())) : EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
         System.out.println("Receive GET Events filters : " + tagsFilter + " :: " + filters + " :: pageNumber" + pageNumber + " :: pageSize :: " + pageSize);
 
-        return eventService.findAllByFiltering(pageNumber, pageSize, filters);
+        return ResponseEntity.ok(eventService.findAllByFiltering(pageNumber, pageSize, filters));
     }
 }

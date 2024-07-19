@@ -56,7 +56,7 @@ public class AuthController {
         return ResponseEntity.ok(AuthDTOMapper.responseDTO(user));
       }
 
-    } catch (BadCredentialsException b) {
+    } catch (Exception b) {
       throw new BadCredentialsException("Je ne vous connais pas!!");
     }
     return null;
