@@ -51,25 +51,24 @@ public class SecurityConfiguration {
             .configurationSource(corsConfigurationSource()))
         .authorizeHttpRequests(request -> request
             .requestMatchers(
-		            RouteDefinition.Auth.LOGIN_URL,
-		            RouteDefinition.Auth.LOGOUT_URL,
-		            // RouteDefinition.Auth.REGISTER_URL,
-		            // RouteDefinition.Auth.EMAIL_CONFIRMATION_URL,
-		            /* ****** ****** ****** ****** */
-		            RouteDefinition.Users.PROFILE_URL,
-		            RouteDefinition.Users.CHANGE_PASSWORD_URL,
-		            RouteDefinition.Users.AVATAR_URL,
-		            /* ****** ****** ****** ****** */
-		            // RouteDefinition.Events.EVENTS_URL,
-		            // RouteDefinition.Events.EVENTS_WITH_ID_URL,
-		            RouteDefinition.Events.EVENTS_WITH_ID_GROUP_LIST_URL,
-		            // RouteDefinition.Events.EVENTS_WITH_ID_GROUP_WITH_ID_URL,
-		            RouteDefinition.Events.FILTER_URL,
-		            RouteDefinition.Events.TAGS_URL,
-		            RouteDefinition.Events.TAGS_FILTER_URL,
-		            /* ****** ****** ****** ****** */
-		            RouteDefinition.Groups.TAGS_URL
-            )
+                RouteDefinition.Auth.LOGIN_URL,
+                RouteDefinition.Auth.LOGOUT_URL,
+                // RouteDefinition.Auth.REGISTER_URL,
+                // RouteDefinition.Auth.EMAIL_CONFIRMATION_URL,
+                /* ****** ****** ****** ****** */
+                RouteDefinition.Users.PROFILE_URL,
+                RouteDefinition.Users.CHANGE_PASSWORD_URL,
+                // RouteDefinition.Users.AVATAR_URL,
+                /* ****** ****** ****** ****** */
+                // RouteDefinition.Events.EVENTS_URL,
+                // RouteDefinition.Events.EVENTS_WITH_ID_URL,
+                RouteDefinition.Events.EVENTS_WITH_ID_GROUP_LIST_URL,
+                // RouteDefinition.Events.EVENTS_WITH_ID_GROUP_WITH_ID_URL,
+                RouteDefinition.Events.FILTER_URL,
+                RouteDefinition.Events.TAGS_URL,
+                RouteDefinition.Events.TAGS_FILTER_URL,
+                /* ****** ****** ****** ****** */
+                RouteDefinition.Groups.TAGS_URL)
             .permitAll()
             .anyRequest().authenticated())
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
