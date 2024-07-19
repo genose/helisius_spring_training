@@ -2,7 +2,7 @@ package fr.olprog_c.le_phare_culturel.dtos.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record UserPostRequestDTO(
+public record UserRequestDTO(
         @JsonProperty("firstname")
         String firstName,
 
@@ -21,7 +21,7 @@ public record UserPostRequestDTO(
         @JsonProperty("description")
         String profileDescription,
 
-        @JsonProperty("confirm_password")
+        @JsonProperty("password")
         String password,
 
         @JsonProperty("confirm_password")
