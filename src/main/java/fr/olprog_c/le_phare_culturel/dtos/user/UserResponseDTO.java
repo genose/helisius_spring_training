@@ -1,9 +1,8 @@
 package fr.olprog_c.le_phare_culturel.dtos.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record UserPostResponseDTO(
+public record UserResponseDTO(
         @JsonProperty("firstname")
         String firstName,
 
