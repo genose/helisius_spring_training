@@ -137,13 +137,15 @@ public class AuthController {
       return ResponseEntity.status(401).body(null);
     }
 
-    System.out.println(user);
     return ResponseEntity.ok(UserDTOMapper.responseDTO(user));
   }
 
   @PostMapping(RouteDefinition.Auth.REFRESH_TOKEN_URL)
   public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
     String refreshToken = null;
+    if (request.getCookies() == null) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "No refresh token found"));
+    }
     for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
       if (JWTService.REFRESH_TOKEN_NAME.equals(cookie.getName())) {
         refreshToken = cookie.getValue();
