@@ -1,5 +1,6 @@
 package fr.olprog_c.le_phare_culturel.controllers;
 
+import java.time.Instant;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -11,8 +12,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +27,8 @@ import fr.olprog_c.le_phare_culturel.dtos.mapper.UserDTOMapper;
 import fr.olprog_c.le_phare_culturel.dtos.user.UserResponseDTO;
 import fr.olprog_c.le_phare_culturel.entities.UserEntity;
 import fr.olprog_c.le_phare_culturel.services.AuthService;
+import fr.olprog_c.le_phare_culturel.services.TokenBlacklistService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -44,11 +45,30 @@ public class AuthController {
   private final AuthService authService;
   private final JWTService jwtService;
   private final AuthenticationManager authenticationManager;
+  private final TokenBlacklistService tokenBlacklistService;
 
-  public AuthController(AuthService authService, JWTService jwtService, AuthenticationManager authenticationManager) {
+  public AuthController(AuthService authService, JWTService jwtService, AuthenticationManager authenticationManager,
+      TokenBlacklistService tokenBlacklistService) {
     this.authService = authService;
     this.jwtService = jwtService;
     this.authenticationManager = authenticationManager;
+    this.tokenBlacklistService = tokenBlacklistService;
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    return true;
   }
 
   @PostMapping(RouteDefinition.Auth.LOGIN_URL)
@@ -111,7 +131,8 @@ public class AuthController {
     }
   }
 
-  @GetMapping("/auth/status")
+
+  @GetMapping(RouteDefinition.Auth.AUTH_STATUS_URL)
   public ResponseEntity<UserResponseDTO> getStatus(@AuthenticationPrincipal UserEntity user) {
     if (user == null) {
       return ResponseEntity.status(401).body(null);
@@ -121,7 +142,7 @@ public class AuthController {
     return ResponseEntity.ok(UserDTOMapper.responseDTO(user));
   }
 
-  @PostMapping("/auth/token/refresh")
+  @PostMapping(RouteDefinition.Auth.REFRESH_TOKEN_URL)
   public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
     String refreshToken = null;
     for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
@@ -143,5 +164,35 @@ public class AuthController {
     } else {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Invalid refresh token"));
     }
+  }
+
+  @PostMapping("/auth/logout")
+  public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+    String token = null;
+    for (Cookie cookie : request.getCookies()) {
+      if ("access_token".equals(cookie.getName())) {
+        token = cookie.getValue();
+        break;
+      }
+    }
+
+    if (token != null) {
+      tokenBlacklistService.blacklistToken(token, Instant.now().plusSeconds(accessTokenExpirationMinute * 60));
+    }
+
+    Cookie accessTokenCookie = new Cookie("access_token", null);
+    accessTokenCookie.setMaxAge(0);
+    accessTokenCookie.setHttpOnly(true);
+    accessTokenCookie.setPath("/");
+
+    Cookie refreshTokenCookie = new Cookie("refresh_token", null);
+    refreshTokenCookie.setMaxAge(0);
+    refreshTokenCookie.setHttpOnly(true);
+    refreshTokenCookie.setPath("/");
+
+    response.addCookie(accessTokenCookie);
+    response.addCookie(refreshTokenCookie);
+
+    return ResponseEntity.ok().body(Map.of("message", "Logged out successfully"));
   }
 }
