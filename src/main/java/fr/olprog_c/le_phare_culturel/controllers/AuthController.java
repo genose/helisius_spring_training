@@ -2,15 +2,18 @@ package fr.olprog_c.le_phare_culturel.controllers;
 
 import java.util.Map;
 
-import fr.olprog_c.le_phare_culturel.controllers.routes.RouteDefinition;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +24,8 @@ import fr.olprog_c.le_phare_culturel.controllers.routes.RouteDefinition;
 import fr.olprog_c.le_phare_culturel.dtos.AuthLoginPostDTO;
 import fr.olprog_c.le_phare_culturel.dtos.AuthRegisterPostDTO;
 import fr.olprog_c.le_phare_culturel.dtos.mapper.AuthDTOMapper;
+import fr.olprog_c.le_phare_culturel.dtos.mapper.UserDTOMapper;
+import fr.olprog_c.le_phare_culturel.dtos.user.UserResponseDTO;
 import fr.olprog_c.le_phare_culturel.entities.UserEntity;
 import fr.olprog_c.le_phare_culturel.services.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +34,12 @@ import jakarta.validation.Valid;
 
 @RestController
 public class AuthController {
+
+  @Value("#{${jwt.accessTokenExpirationMs:1} * 60}") // 15 minutes
+  private Long accessTokenExpirationMinute;
+
+  @Value("#{${jwt.refreshTokenExpirationMs:1440} * 60}") // 30 days
+  private Long refreshTokenExpirationMinute;
 
   private final AuthService authService;
   private final JWTService jwtService;
@@ -49,21 +60,11 @@ public class AuthController {
         UserEntity user = (UserEntity) authenticate.getPrincipal();
         Map<String, String> tokens = jwtService.generateTokensForEmail(user.getEmail());
 
-        ResponseCookie accessTokenCookie = ResponseCookie
-            .from(JWTService.ACCESS_TOKEN_NAME, tokens.get(JWTService.ACCESS_TOKEN_NAME))
-            .httpOnly(true)
-            .secure(true)
-            .path("/")
-            .maxAge(10 * 60 * 60)
-            .build();
+        ResponseCookie accessTokenCookie = getAccessTokenCookie(tokens, JWTService.ACCESS_TOKEN_NAME,
+            accessTokenExpirationMinute);
 
-        ResponseCookie refreshTokenCookie = ResponseCookie
-            .from(JWTService.REFRESH_TOKEN_NAME, tokens.get(JWTService.REFRESH_TOKEN_NAME))
-            .httpOnly(true)
-            .secure(true)
-            .path("/")
-            .maxAge(30 * 24 * 60 * 60)
-            .build();
+        ResponseCookie refreshTokenCookie = getAccessTokenCookie(tokens, JWTService.REFRESH_TOKEN_NAME,
+            refreshTokenExpirationMinute);
 
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
@@ -89,6 +90,18 @@ public class AuthController {
     return null;
   }
 
+  private ResponseCookie getAccessTokenCookie(Map<String, String> tokens, String tokenName,
+      Long tokenExpiration) {
+    ResponseCookie cookie = ResponseCookie
+        .from(tokenName, tokens.get(tokenName))
+        .httpOnly(true)
+        .secure(true)
+        .path("/")
+        .maxAge(tokenExpiration)
+        .build();
+    return cookie;
+  }
+
   @PostMapping(RouteDefinition.Auth.REGISTER_URL)
   public void register(@Valid @RequestBody AuthRegisterPostDTO dto) {
     if (dto.confirmPassword().equals(dto.password())) {
@@ -96,6 +109,16 @@ public class AuthController {
     } else {
       throw new HttpServerErrorException(HttpStatus.PRECONDITION_REQUIRED, "Les mots de passe ne sont pas identiques");
     }
+  }
+
+  @GetMapping("/auth/status")
+  public ResponseEntity<UserResponseDTO> getStatus(@AuthenticationPrincipal UserEntity user) {
+    if (user == null) {
+      return ResponseEntity.status(401).body(null);
+    }
+
+    System.out.println(user);
+    return ResponseEntity.ok(UserDTOMapper.responseDTO(user));
   }
 
   @PostMapping("/auth/token/refresh")
@@ -107,17 +130,12 @@ public class AuthController {
       }
     }
 
-    if (refreshToken != null && jwtService.isTokenExpired(refreshToken)) {
+    if (refreshToken != null && !jwtService.isTokenExpired(refreshToken)) {
       String username = jwtService.extractUsername(refreshToken);
       Map<String, String> tokens = jwtService.generateTokensForEmail(username);
 
-      ResponseCookie newAccessTokenCookie = ResponseCookie
-          .from(JWTService.ACCESS_TOKEN_NAME, tokens.get(JWTService.ACCESS_TOKEN_NAME))
-          .httpOnly(true)
-          .secure(true)
-          .path("/")
-          .maxAge(10 * 60)
-          .build();
+      ResponseCookie newAccessTokenCookie = getAccessTokenCookie(tokens, JWTService.ACCESS_TOKEN_NAME,
+          accessTokenExpirationMinute);
 
       response.addHeader("Set-Cookie", newAccessTokenCookie.toString());
 

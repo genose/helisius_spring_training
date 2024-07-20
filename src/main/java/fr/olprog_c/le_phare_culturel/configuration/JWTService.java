@@ -26,10 +26,10 @@ public class JWTService {
 
   private final UserDetailsService userDetailsService;
 
-  @Value("#{${jwt.accessTokenExpirationMs:900}* 1000}") // 15 minutes
+  @Value("#{${jwt.accessTokenExpirationMs:1} * 60}") // 15 minutes
   private Long accessTokenExpirationMs;
 
-  @Value("#{${jwt.refreshTokenExpirationMs:2592000}* 1000}") // 30 days
+  @Value("#{${jwt.refreshTokenExpirationMs:1440} * 60}") // 30 days
   private Long refreshTokenExpirationMs;
 
   @Value("${jwt.secret:keysecret}")
@@ -54,8 +54,8 @@ public class JWTService {
   }
 
   private String generateToken(UserDetails userDetails, Long expirationMs) {
-    long now = System.currentTimeMillis();
-    Date expirationDate = new Date(now + expirationMs);
+    final long now = System.currentTimeMillis() / 1000;
+    final long expirationDate = now + expirationMs;
 
     UserEntity user = (UserEntity) userDetails;
 
