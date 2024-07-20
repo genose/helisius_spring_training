@@ -26,10 +26,10 @@ public class JWTService {
 
   private final UserDetailsService userDetailsService;
 
-  @Value("#{${jwt.accessTokenExpirationMs:1} * 60}") // 15 minutes
+  @Value("#{${jwt.accessTokenExpirationMinutes:1} * 60}")
   private Long accessTokenExpirationMs;
 
-  @Value("#{${jwt.refreshTokenExpirationMs:1440} * 60}") // 30 days
+  @Value("#{${jwt.refreshTokenExpirationMinutes:1440} * 60}")
   private Long refreshTokenExpirationMs;
 
   @Value("${jwt.secret:keysecret}")

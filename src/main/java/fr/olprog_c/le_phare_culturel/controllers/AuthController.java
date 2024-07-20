@@ -36,10 +36,10 @@ import jakarta.validation.Valid;
 @RestController
 public class AuthController {
 
-  @Value("#{${jwt.accessTokenExpirationMs:1} * 60}") // 15 minutes
+  @Value("#{${jwt.accessTokenExpirationMinutes:1} * 60}")
   private Long accessTokenExpirationMinute;
 
-  @Value("#{${jwt.refreshTokenExpirationMs:1440} * 60}") // 30 days
+  @Value("#{${jwt.refreshTokenExpirationMinutes:1440} * 60}")
   private Long refreshTokenExpirationMinute;
 
   private final AuthService authService;
@@ -130,7 +130,6 @@ public class AuthController {
       throw new HttpServerErrorException(HttpStatus.PRECONDITION_REQUIRED, "Les mots de passe ne sont pas identiques");
     }
   }
-
 
   @GetMapping(RouteDefinition.Auth.AUTH_STATUS_URL)
   public ResponseEntity<UserResponseDTO> getStatus(@AuthenticationPrincipal UserEntity user) {
