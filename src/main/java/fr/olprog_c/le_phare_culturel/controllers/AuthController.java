@@ -131,6 +131,7 @@ public class AuthController {
     }
   }
 
+
   @GetMapping(RouteDefinition.Auth.AUTH_STATUS_URL)
   public ResponseEntity<UserResponseDTO> getStatus(@AuthenticationPrincipal UserEntity user) {
     if (user == null) {
