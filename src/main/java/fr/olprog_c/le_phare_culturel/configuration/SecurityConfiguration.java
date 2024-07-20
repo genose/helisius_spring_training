@@ -3,7 +3,6 @@ package fr.olprog_c.le_phare_culturel.configuration;
 import java.util.List;
 import java.util.Map;
 
-import fr.olprog_c.le_phare_culturel.controllers.routes.RouteDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -53,13 +52,14 @@ public class SecurityConfiguration {
             .requestMatchers(
                 RouteDefinition.Auth.LOGIN_URL,
                 RouteDefinition.Auth.LOGOUT_URL,
-                // RouteDefinition.Auth.REGISTER_URL,
-                // RouteDefinition.Auth.EMAIL_CONFIRMATION_URL,
+                RouteDefinition.Auth.REGISTER_URL,
+                RouteDefinition.Auth.EMAIL_CONFIRMATION_URL,
                 /* ****** ****** ****** ****** */
                 RouteDefinition.Users.PROFILE_URL,
                 RouteDefinition.Users.CHANGE_PASSWORD_URL,
                 // RouteDefinition.Users.AVATAR_URL,
-                "/auth/token/refresh",
+                RouteDefinition.Auth.REFRESH_TOKEN_URL,
+                RouteDefinition.Auth.AUTH_STATUS_URL,
                 /* ****** ****** ****** ****** */
                 // RouteDefinition.Events.EVENTS_URL,
                 // RouteDefinition.Events.EVENTS_WITH_ID_URL,
