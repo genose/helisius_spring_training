@@ -18,79 +18,46 @@ import java.util.Optional;
 
 @Service
 public class EventService {
-    private final EventRepository eventRepository;
+  private final EventRepository eventRepository;
 
-    /**
-     * Event Service constructor, injecting the dependent services.
-     *
-     * @param eventRepository Instance of Event Repository.
-     */
-    public EventService(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
+  public EventService(EventRepository eventRepository) {
+    this.eventRepository = eventRepository;
+  }
+
+  public List<EventEntity> findAllInLimit(int pageNumber, int pageSize) {
+    pageNumber = Math.max(pageNumber, EventParametersConstants.DEFAULT_PAGE_OFFSET.getIntegerValue());
+    pageSize = Math.max(pageSize, EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
+    return eventRepository.findAll(PageRequest.of(pageNumber, pageSize)).getContent();
+  }
+
+  public EventEntityResponseDTO findByID(long id) {
+    Optional<EventEntity> retrievedEvent = eventRepository.findById(Math.max(0, id));
+    if (retrievedEvent.isPresent()) {
+      return retrievedEvent.map(EventDTOMapper::convertEntityToResponseDTO).orElse(null);
     }
+    return null;
+  }
 
-    /**
-     * This method fetches paged results of EventEntity.
-     *
-     * @param pageNumber Integer specifying zero based page index, must not be negative.
-     * @param pageSize   Integer specifying the size of the page to be returned, must not be negative.
-     * @return List of EventEntity.
-     */
-    public List<EventEntity> findAllInLimit(int pageNumber, int pageSize) {
-        pageNumber = Math.max(pageNumber, EventParametersConstants.DEFAULT_PAGE_OFFSET.getIntegerValue());
-        pageSize = Math.max(pageSize, EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
-        return eventRepository.findAll(PageRequest.of(pageNumber, pageSize)).getContent();
-    }
+  public List<EventEntityResponseDTO> findAllInLimitDTO(int pageNumber, int pageSize) {
+    pageNumber = Math.max(pageNumber, EventParametersConstants.DEFAULT_PAGE_OFFSET.getIntegerValue());
+    pageSize = Math.max(pageSize, EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
+    List<EventEntity> eventEntityList = findAllInLimit(pageNumber, pageSize);
 
-    /**
-     * This method fetches EventEntity by its ID.
-     *
-     * @param id Integer specifying the ID of the event, must not be negative.
-     * @return EventEntity instance if found, else null.
-     */
-    public EventEntityResponseDTO findByID(int id) {
-        Optional<EventEntity> retrievedEvent = eventRepository.findById(Math.max(0, id));
-        if (retrievedEvent.isPresent()) {
-            return retrievedEvent.map(EventDTOMapper::convertEntityToResponseDTO).orElse(null);
-        }
-        return null;
-    }
+    return eventEntityList.stream().map(EventDTOMapper::convertEntityToResponseDTO).toList();
+  }
 
-    /**
-     * This method fetches paged DTOs of EventEntityGETResponseDTO converted from EventEntity.
-     *
-     * @param pageNumber Integer specifying zero based page index, must not be negative.
-     * @param pageSize   Integer specifying the size of the page to be returned, must not be negative.
-     * @return List of EventEntityGETResponseDTO.
-     */
-    public List<EventEntityResponseDTO> findAllInLimitDTO(int pageNumber, int pageSize) {
-        pageNumber = Math.max(pageNumber, EventParametersConstants.DEFAULT_PAGE_OFFSET.getIntegerValue());
-        pageSize = Math.max(pageSize, EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
-        List<EventEntity> eventEntityList = findAllInLimit(pageNumber, pageSize);
+  public List<EventEntityResponseDTO> findAllByFiltering(int pageNumber, int pageSize, Map<String, String> filters) {
+    pageNumber = Math.max(pageNumber, EventParametersConstants.DEFAULT_PAGE_OFFSET.getIntegerValue());
+    pageSize = Math.max(pageSize, EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
+    Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id").descending());
 
-        return eventEntityList.stream().map(EventDTOMapper::convertEntityToResponseDTO).toList();
-    }
+    final Specification<EventEntity> filtersSpecificationPredicates = EventFiltersSpecification
+        .getFiltersSpecificationPredicates(filters);
 
-    /**
-     * This method fetches filtered and paged DTOs of EventEntityGETResponseDTO converted from EventEntity.
-     *
-     * @param pageNumber Integer specifying zero based page index, must not be negative.
-     * @param pageSize   Integer specifying the size of the page to be returned, must not be negative.
-     * @param filters    Key-Value pair of attributes and their values to filter the events by.
-     * @return List of EventEntityGETResponseDTO.
-     */
-    public List<EventEntityResponseDTO> findAllByFiltering(int pageNumber, int pageSize, Map<String, String> filters) {
-        pageNumber = Math.max(pageNumber, EventParametersConstants.DEFAULT_PAGE_OFFSET.getIntegerValue());
-        pageSize = Math.max(pageSize, EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id").descending());
+    List<EventEntity> filteredEventList = findAllInLimit(pageNumber, pageSize);
+    // eventRepository.findEventsBySpecification(filtersSpecificationPredicates).stream().limit(pageSize).toList();
+    // .subList(pageNumber * pageSize, (1 + pageNumber) * pageSize);
 
-        final Specification<EventEntity> filtersSpecificationPredicates =
-                EventFiltersSpecification.getFiltersSpecificationPredicates(filters);
-
-        List<EventEntity> filteredEventList = findAllInLimit(pageNumber, pageSize);
-        //eventRepository.findEventsBySpecification(filtersSpecificationPredicates).stream().limit(pageSize).toList();
-        // .subList(pageNumber * pageSize, (1 + pageNumber) * pageSize);
-
-        return filteredEventList.stream().map(EventDTOMapper::convertEntityToResponseDTO).toList();
-    }
+    return filteredEventList.stream().map(EventDTOMapper::convertEntityToResponseDTO).toList();
+  }
 }
