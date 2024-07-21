@@ -69,6 +69,8 @@ public class SecurityConfiguration {
                 RouteDefinition.Events.TAGS_URL,
                 RouteDefinition.Events.TAGS_FILTER_URL,
                 /* ****** ****** ****** ****** */
+                "/get-events",
+                "/csv-events",
                 RouteDefinition.Groups.TAGS_URL)
             .permitAll()
             .anyRequest().authenticated())
