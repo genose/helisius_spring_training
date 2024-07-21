@@ -1,7 +1,10 @@
 package fr.olprog_c.le_phare_culturel.api.services;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Transient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -16,6 +19,12 @@ import reactor.core.publisher.Mono;
 @Transient
 public class APIEventService {
 
+  @Value("${openagenda.api.key}")
+  private String apiKey;
+
+  @Value("${openagenda.api.agenda.id}")
+  private String agendaId;
+
   private final WebClient webClient;
   private final EventRepository eventRepository;
 
@@ -25,9 +34,16 @@ public class APIEventService {
   }
 
   public Mono<EventResponse> fetchEvents() {
+    Date date = new Date();
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    String formattedDate = sdf.format(date);
+
+    String url = String.format(
+        "https://api.openagenda.com/v2/agendas/%s/events?key=%s&size=300&timings[gte]=%s&monolingual=fr&detailed=1",
+        agendaId, apiKey, formattedDate);
+    System.out.println(url);
     return webClient.get()
-        .uri(
-            "https://api.openagenda.com/v2/agendas/57621068/events?key=dd5c193e8af34e65b7654f7ba60b3e4f&size=300&timings[gte]=2024-07-21T00:00:00.000Z&monolingual=fr&detailed=1")
+        .uri(url)
         .retrieve()
         .bodyToMono(EventResponse.class);
   }
