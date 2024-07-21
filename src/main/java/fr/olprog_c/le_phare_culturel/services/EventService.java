@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,14 +28,12 @@ public class EventService {
     this.eventRepository = eventRepository;
   }
 
-  public Set<EventEntity> findAll() {
-    return eventRepository.findAll().stream().collect(Collectors.toSet());
+  public List<EventEntity> findAll() {
+    return eventRepository.findAll();
   }
 
-  public List<EventEntity> findAllInLimit(int pageNumber, int pageSize) {
-    pageNumber = Math.max(pageNumber, EventParametersConstants.DEFAULT_PAGE_OFFSET.getIntegerValue());
-    pageSize = Math.max(pageSize, EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
-    return eventRepository.findAll(PageRequest.of(pageNumber, pageSize)).getContent();
+  public Page<EventEntity> findAllInLimit(int pageNumber, int pageSize) {
+    return eventRepository.findAll(PageRequest.of(pageNumber, pageSize));
   }
 
   public EventEntityResponseDTO findByID(long id) {
@@ -45,27 +44,38 @@ public class EventService {
     return null;
   }
 
-  public List<EventEntityResponseDTO> findAllInLimitDTO(int pageNumber, int pageSize) {
-    pageNumber = Math.max(pageNumber, EventParametersConstants.DEFAULT_PAGE_OFFSET.getIntegerValue());
-    pageSize = Math.max(pageSize, EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
-    List<EventEntity> eventEntityList = findAllInLimit(pageNumber, pageSize);
-
-    return eventEntityList.stream().map(EventDTOMapper::convertEntityToResponseDTO).toList();
-  }
-
-  public List<EventEntityResponseDTO> findAllByFiltering(int pageNumber, int pageSize, Map<String, String> filters) {
-    pageNumber = Math.max(pageNumber, EventParametersConstants.DEFAULT_PAGE_OFFSET.getIntegerValue());
-    pageSize = Math.max(pageSize, EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
-    Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id").descending());
-
-    final Specification<EventEntity> filtersSpecificationPredicates = EventFiltersSpecification
-        .getFiltersSpecificationPredicates(filters);
-
-    List<EventEntity> filteredEventList = findAllInLimit(pageNumber, pageSize);
-    // eventRepository.findEventsBySpecification(filtersSpecificationPredicates).stream().limit(pageSize).toList();
-    // .subList(pageNumber * pageSize, (1 + pageNumber) * pageSize);
-
-    return filteredEventList.stream().map(EventDTOMapper::convertEntityToResponseDTO).toList();
-  }
+  // public List<EventEntityResponseDTO> findAllInLimitDTO(int pageNumber, int
+  // pageSize) {
+  // pageNumber = Math.max(pageNumber,
+  // EventParametersConstants.DEFAULT_PAGE_OFFSET.getIntegerValue());
+  // pageSize = Math.max(pageSize,
+  // EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
+  // List<EventEntity> eventEntityList = findAllInLimit(pageNumber, pageSize);
+  //
+  // return
+  // eventEntityList.stream().map(EventDTOMapper::convertEntityToResponseDTO).toList();
+  // }
+  //
+  // public List<EventEntityResponseDTO> findAllByFiltering(int pageNumber, int
+  // pageSize, Map<String, String> filters) {
+  // pageNumber = Math.max(pageNumber,
+  // EventParametersConstants.DEFAULT_PAGE_OFFSET.getIntegerValue());
+  // pageSize = Math.max(pageSize,
+  // EventParametersConstants.DEFAULT_PAGE_SIZE.getIntegerValue());
+  // Pageable pageable = PageRequest.of(pageNumber, pageSize,
+  // Sort.by("id").descending());
+  //
+  // final Specification<EventEntity> filtersSpecificationPredicates =
+  // EventFiltersSpecification
+  // .getFiltersSpecificationPredicates(filters);
+  //
+  // List<EventEntity> filteredEventList = findAllInLimit(pageNumber, pageSize);
+  // //
+  // eventRepository.findEventsBySpecification(filtersSpecificationPredicates).stream().limit(pageSize).toList();
+  // // .subList(pageNumber * pageSize, (1 + pageNumber) * pageSize);
+  //
+  // return
+  // filteredEventList.stream().map(EventDTOMapper::convertEntityToResponseDTO).toList();
+  // }
 
 }

@@ -4,10 +4,18 @@ meta {
   seq: 5
 }
 
-post {
-  url: {{api_url}}/events
+get {
+  url: {{api_url}}/events?page=14
   body: none
   auth: none
+}
+
+params:query {
+  page: 14
+}
+
+headers {
+  cookie: access_token={{access_token}}
 }
 
 body:json {
