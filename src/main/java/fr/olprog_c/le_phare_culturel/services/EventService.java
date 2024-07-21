@@ -1,20 +1,23 @@
 package fr.olprog_c.le_phare_culturel.services;
 
-import fr.olprog_c.le_phare_culturel.EventFiltersSpecification;
-import fr.olprog_c.le_phare_culturel.controllers.routes.EventParametersConstants;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventEntityResponseDTO;
-import fr.olprog_c.le_phare_culturel.dtos.mapper.EventDTOMapper;
-import fr.olprog_c.le_phare_culturel.entities.EventEntity;
-import fr.olprog_c.le_phare_culturel.repositories.EventRepository;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import fr.olprog_c.le_phare_culturel.EventFiltersSpecification;
+import fr.olprog_c.le_phare_culturel.controllers.routes.EventParametersConstants;
+import fr.olprog_c.le_phare_culturel.dtos.event.EventEntityResponseDTO;
+import fr.olprog_c.le_phare_culturel.dtos.mapper.EventDTOMapper;
+import fr.olprog_c.le_phare_culturel.entities.EventEntity;
+import fr.olprog_c.le_phare_culturel.repositories.EventRepository;
 
 @Service
 public class EventService {
@@ -22,6 +25,10 @@ public class EventService {
 
   public EventService(EventRepository eventRepository) {
     this.eventRepository = eventRepository;
+  }
+
+  public Set<EventEntity> findAll() {
+    return eventRepository.findAll().stream().collect(Collectors.toSet());
   }
 
   public List<EventEntity> findAllInLimit(int pageNumber, int pageSize) {
@@ -60,4 +67,5 @@ public class EventService {
 
     return filteredEventList.stream().map(EventDTOMapper::convertEntityToResponseDTO).toList();
   }
+
 }

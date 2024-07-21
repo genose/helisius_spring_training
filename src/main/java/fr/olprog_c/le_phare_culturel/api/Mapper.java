@@ -79,20 +79,4 @@ public class Mapper {
     };
   }
 
-  private static List<String> extractKeywords(Object keywords) {
-    if (keywords instanceof List<?>) {
-      List<?> keywordList = (List<?>) keywords;
-      List<String> result = new ArrayList<>();
-      for (Object keyword : keywordList) {
-        if (keyword instanceof String) {
-          result.add((String) keyword);
-        } else {
-          throw new IllegalArgumentException("Keyword is not a string: " + keyword);
-        }
-      }
-      return result;
-    } else {
-      throw new IllegalArgumentException("Keywords are not a list: " + keywords);
-    }
-  }
 }

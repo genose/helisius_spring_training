@@ -1,8 +1,6 @@
 
 package fr.olprog_c.le_phare_culturel.api.models;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record Event(

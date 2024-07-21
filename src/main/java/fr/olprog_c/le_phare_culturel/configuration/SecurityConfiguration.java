@@ -61,7 +61,7 @@ public class SecurityConfiguration {
                 RouteDefinition.Auth.REFRESH_TOKEN_URL,
                 RouteDefinition.Auth.AUTH_STATUS_URL,
                 /* ****** ****** ****** ****** */
-                // RouteDefinition.Events.EVENTS_URL,
+                RouteDefinition.Events.EVENTS_URL,
                 // RouteDefinition.Events.EVENTS_WITH_ID_URL,
                 RouteDefinition.Events.EVENTS_WITH_ID_GROUP_LIST_URL,
                 // RouteDefinition.Events.EVENTS_WITH_ID_GROUP_WITH_ID_URL,

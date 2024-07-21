@@ -1,0 +1,18 @@
+meta {
+  name: Get Events
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{api_url}}/events
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "password": "Sam@1981",
+    "email": "samuel.michaux@ik.me"
+  }
+}
