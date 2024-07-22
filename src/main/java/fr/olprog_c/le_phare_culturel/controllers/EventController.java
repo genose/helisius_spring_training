@@ -1,10 +1,13 @@
 package fr.olprog_c.le_phare_culturel.controllers;
 
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpServerErrorException;
 
 import fr.olprog_c.le_phare_culturel.controllers.routes.RouteDefinition;
 import fr.olprog_c.le_phare_culturel.dtos.event.EventResponseDTO;
@@ -21,13 +24,13 @@ public class EventController {
     this.eventService = eventService;
   }
 
-  // @GetMapping(value = RouteDefinition.Events.EVENTS_WITH_ID_URL)
-  // public ResponseEntity<EventEntityResponseDTO> getEventsByID(@PathVariable int
-  // eventid) {
-  // System.out.println("Receive GET Events ID : " + eventid);
-  // return ResponseEntity.ok(eventService.findByID(eventid));
-  // }
-  //
+  @GetMapping(value = RouteDefinition.Events.EVENTS_WITH_ID_URL)
+  public ResponseEntity<?> getEventsByID(@PathVariable long eventid) {
+    return eventService.findByID(eventid)
+        .map(ResponseEntity::ok)
+        .orElseThrow(() -> new HttpServerErrorException(HttpStatus.NOT_FOUND, "Event not found"));
+  }
+
   // /**
   // * Fetches a single event by its id. Currently returns an empty
   // * {@link EventEntityResponseDTO} object.
@@ -228,7 +231,7 @@ public class EventController {
 
     System.out.println(events.getSize());
 
-    return ResponseEntity.ok(EventDTOMapper.convertEntityToResponseDTO(events));
+    return ResponseEntity.ok(EventDTOMapper.convertPageToResponseDTO(events));
 
   }
 

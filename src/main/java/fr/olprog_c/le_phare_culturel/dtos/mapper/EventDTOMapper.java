@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 
@@ -20,7 +21,7 @@ import fr.olprog_c.le_phare_culturel.entities.TTimingEntity;
 
 public class EventDTOMapper {
 
-  public static EventResponseDTO convertEntityToResponseDTO(Page<EventEntity> event) {
+  public static EventResponseDTO convertPageToResponseDTO(Page<EventEntity> event) {
     List<EventEntity> events = event.getContent();
 
     if (events == null) {
@@ -41,7 +42,7 @@ public class EventDTOMapper {
             .toList());
   }
 
-  private static EventDetailReponseDTO convertDetailReponseDTO(EventEntity event) {
+  public static EventDetailReponseDTO convertDetailReponseDTO(EventEntity event) {
     return new EventDetailReponseDTO(
         event.getUid(),
         convertImagesDTO(event.getImages()),

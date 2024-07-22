@@ -1,11 +1,14 @@
 package fr.olprog_c.le_phare_culturel.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import fr.olprog_c.le_phare_culturel.dtos.event.EventDetailReponseDTO;
+import fr.olprog_c.le_phare_culturel.dtos.mapper.EventDTOMapper;
 import fr.olprog_c.le_phare_culturel.entities.EventEntity;
 import fr.olprog_c.le_phare_culturel.repositories.EventRepository;
 
@@ -25,15 +28,13 @@ public class EventService {
     return eventRepository.findAll(PageRequest.of(pageNumber, pageSize));
   }
 
-  // public EventEntityResponseDTO findByID(long id) {
-  // Optional<EventEntity> retrievedEvent = eventRepository.findById(Math.max(0,
-  // id));
-  // if (retrievedEvent.isPresent()) {
-  // return
-  // retrievedEvent.map(EventDTOMapper::convertEntityToResponseDTO).orElse(null);
-  // }
-  // return null;
-  // }
+  public Optional<EventDetailReponseDTO> findByID(long id) {
+    Optional<EventEntity> retrievedEvent = eventRepository.findById(Math.max(0, id));
+    if (retrievedEvent.isPresent()) {
+      return retrievedEvent.map(EventDTOMapper::convertDetailReponseDTO);
+    }
+    return Optional.empty();
+  }
 
   // public List<EventEntityResponseDTO> findAllInLimitDTO(int pageNumber, int
   // pageSize) {
