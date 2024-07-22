@@ -1,10 +1,14 @@
 package fr.olprog_c.le_phare_culturel.entities;
 
+import java.util.Collection;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -52,5 +56,9 @@ public class EventEntity extends BaseCommonEntity {
 
   @ManyToOne(cascade = CascadeType.ALL)
   private TTimingEntity firstTiming;
+
+  @OneToMany(mappedBy = "relatedEvents", fetch = FetchType.EAGER)
+  @JsonBackReference
+  private Collection<EventGroupUserEntity> referencedEventGroups;
 
 }

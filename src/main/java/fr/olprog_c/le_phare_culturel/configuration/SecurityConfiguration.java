@@ -72,7 +72,8 @@ public class SecurityConfiguration {
                 /* ****** ****** ****** ****** */
                 "/get-events",
                 "/csv-events",
-                RouteDefinition.Groups.TAGS_URL)
+                RouteDefinition.Groups.TAGS_URL,
+                RouteDefinition.Groups.GROUPS_URL)
             .permitAll()
             .anyRequest().authenticated())
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
