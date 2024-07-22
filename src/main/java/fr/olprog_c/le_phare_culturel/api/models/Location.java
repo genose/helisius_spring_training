@@ -5,5 +5,6 @@ public record Location(
     String city,
     double latitude,
     String name,
+    String postalCode,
     double longitude) {
 }

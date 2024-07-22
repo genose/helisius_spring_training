@@ -17,8 +17,12 @@ public class Mapper {
     entity.setUid(event.uid());
     List<ImageEntity> images = new ArrayList<>();
     for (Variant variant : event.image().variants()) {
-      images.add(new ImageEntity(variant.filename(), variant.type()));
+      if (variant.type().equals("thumbnail")) {
+        images.add(new ImageEntity(event.image().base() + variant.filename(), variant.type()));
+
+      }
     }
+    images.add(new ImageEntity(event.image().base() + event.image().filename(), "base"));
     entity.setImages(images);
     entity.setDateRange(event.dateRange());
     entity.setImageCredits(event.imageCredits());
@@ -26,7 +30,7 @@ public class Mapper {
     entity.setDescription(event.description());
     entity.setLongDescription(event.longDescription());
     entity.setTarifs(event.tarifs());
-    entity.setEtiquette(mapEtiquette(event.etiquette()));
+    entity.setSlug(event.slug());
     entity.setType(mapEventType(event.typeDevenement()));
     LocationEntity location = new LocationEntity();
     location.setAddress(event.location().address());
@@ -34,6 +38,7 @@ public class Mapper {
     location.setLatitude(event.location().latitude());
     location.setLongitude(event.location().longitude());
     location.setName(event.location().name());
+    location.setPostalCode(event.location().postalCode());
     entity.setLocation(location);
 
     TTimingEntity firstTiming = new TTimingEntity();
@@ -47,17 +52,6 @@ public class Mapper {
     entity.setLastTiming(lastTiming);
 
     return entity;
-  }
-
-  private static String mapEtiquette(final int etiquette) {
-    System.out.println(etiquette);
-    return switch (etiquette) {
-      case 26 -> "Ouvert";
-      case 27 -> "Annulé";
-      case 28 -> "Complet";
-      default -> throw new IllegalArgumentException("Unknown event type: " + etiquette);
-    };
-
   }
 
   public static String mapEventType(final int eventType) {

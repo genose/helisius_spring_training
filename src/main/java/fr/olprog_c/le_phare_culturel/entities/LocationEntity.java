@@ -27,4 +27,6 @@ public class LocationEntity extends BaseCommonEntity {
   private String name;
 
   private Double longitude;
+
+  private String postalCode;
 }

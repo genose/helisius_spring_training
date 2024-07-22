@@ -39,9 +39,10 @@ public class EventEntity extends BaseCommonEntity {
   @Column(columnDefinition = "TEXT")
   private String tarifs;
 
-  private String etiquette;
-
   private String type;
+
+  @Column(columnDefinition = "TEXT")
+  private String slug;
 
   @ManyToOne(cascade = CascadeType.ALL)
   private LocationEntity location;

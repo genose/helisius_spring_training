@@ -1,8 +1,5 @@
 package fr.olprog_c.le_phare_culturel.controllers;
 
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,9 +7,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.olprog_c.le_phare_culturel.controllers.routes.RouteDefinition;
+import fr.olprog_c.le_phare_culturel.dtos.event.EventResponseDTO;
+import fr.olprog_c.le_phare_culturel.dtos.mapper.EventDTOMapper;
 import fr.olprog_c.le_phare_culturel.entities.EventEntity;
 import fr.olprog_c.le_phare_culturel.services.EventService;
-import jakarta.websocket.server.PathParam;
 
 @RestController
 public class EventController {
@@ -222,11 +220,15 @@ public class EventController {
   // }
 
   @GetMapping(value = RouteDefinition.Events.EVENTS_URL)
-  public ResponseEntity<Page<EventEntity>> getAllEvents(
+  public ResponseEntity<EventResponseDTO> getAllEvents(
       @RequestParam(required = false, name = "page", defaultValue = "0") Integer pageNumber,
       @RequestParam(required = false, name = "size", defaultValue = "20") Integer pageSize) {
 
-    return ResponseEntity.ok(eventService.findAllInLimit(pageNumber, pageSize));
+    Page<EventEntity> events = eventService.findAll(pageNumber, pageSize);
+
+    System.out.println(events.getSize());
+
+    return ResponseEntity.ok(EventDTOMapper.convertEntityToResponseDTO(events));
 
   }
 

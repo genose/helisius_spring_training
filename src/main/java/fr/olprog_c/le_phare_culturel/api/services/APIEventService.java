@@ -13,9 +13,11 @@ import fr.olprog_c.le_phare_culturel.api.Mapper;
 import fr.olprog_c.le_phare_culturel.api.models.Event;
 import fr.olprog_c.le_phare_culturel.api.models.EventResponse;
 import fr.olprog_c.le_phare_culturel.repositories.EventRepository;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Service
+@Slf4j
 @Transient
 public class APIEventService {
 
@@ -39,7 +41,7 @@ public class APIEventService {
     String formattedDate = sdf.format(date);
 
     String url = String.format(
-        "https://api.openagenda.com/v2/agendas/%s/events?key=%s&size=300&timings[gte]=%s&monolingual=fr&detailed=1",
+        "https://api.openagenda.com/v2/agendas/%s/events?key=%s&size=400&timings[gte]=%s&monolingual=fr&detailed=1",
         agendaId, apiKey, formattedDate);
     System.out.println(url);
     return webClient.get()
@@ -51,7 +53,9 @@ public class APIEventService {
   public void save(List<Event> event) {
     // Save the events in the database
     try {
+      log.info("Saving events.....");
       event.stream().map(Mapper::apiToEntity).forEach(eventRepository::save);
+      log.info("Events saved successfully");
     } catch (Exception e) {
       System.out.println("Error saving events: " + e.getMessage());
 
