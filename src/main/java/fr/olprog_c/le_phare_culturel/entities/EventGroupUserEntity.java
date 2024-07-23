@@ -56,6 +56,11 @@ public class EventGroupUserEntity extends BaseCommonEntity {
     @JoinColumn(name = "related_events")
     private EventEntity relatedEvents;
 
+
+    @OneToMany(mappedBy = "id", orphanRemoval = true)
+    @JsonBackReference
+    private Collection<UserEntity> referencedUserList;
+
     @OneToMany(mappedBy = "relatedEventsGroups", orphanRemoval = true)
     @JsonBackReference
     private Collection<EventGroupUserMessageEntity> referencedGroupsMessages;

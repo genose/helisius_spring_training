@@ -4,7 +4,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import fr.olprog_c.le_phare_culturel.dtos.user.UserSlimResponseDTO;
 import org.springframework.data.domain.Page;
 
 import fr.olprog_c.le_phare_culturel.dtos.event.EventDateDetailsDTO;
@@ -199,11 +201,12 @@ public class EventDTOMapper {
                 .stream()
                 .map(EventGroupUserMessageMapper::toDTO)
                 .toList();
-
+        List<UserSlimResponseDTO> participantList = event.getReferencedUserList().stream().map(UserDTOMapper::responseSlimDTO).toList();
         return new EventGroupDTO(
                 event.getId(),
                 event.getGroupName(),
                 UserDTOMapper.responseDTO(event.getReferencedUserAuthor()),
+                participantList,
                 messages);
 
     }

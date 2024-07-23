@@ -7,8 +7,10 @@ public class EventGroupUserMessageMapper {
 
     public static EventMessageDTO toDTO(EventGroupUserMessageEntity messageEntity) {
         return new EventMessageDTO(
+                messageEntity.getId(),
                 messageEntity.getMessageText(),
-                UserDTOMapper.responseDTO(messageEntity.getReferencedUserAuthor()));
+                UserDTOMapper.responseDTO(messageEntity.getReferencedUserAuthor()),
+                messageEntity.getCreatedDate());
     }
 
     public static EventMessageSlimDTO toSlimDTO(EventGroupUserMessageEntity messageEntity) {

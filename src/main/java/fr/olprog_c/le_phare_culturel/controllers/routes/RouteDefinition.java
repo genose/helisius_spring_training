@@ -38,7 +38,8 @@ public final class RouteDefinition {
 
   public static class Groups {
     public static final String GROUPS_URL = "/groups";
-    public static final String GROUPS_WITH_ID_URL = GROUPS_URL + "/{groupid}";
+    public static final String GROUPS_PARAM_TAG = "groupid";
+    public static final String GROUPS_WITH_ID_URL = GROUPS_URL + "/{"+GROUPS_PARAM_TAG+"}";
     public static final String TAGS_URL = GROUPS_URL + "/" + EventParametersConstants.FILTER_TAGS_NAME;
   }
 
