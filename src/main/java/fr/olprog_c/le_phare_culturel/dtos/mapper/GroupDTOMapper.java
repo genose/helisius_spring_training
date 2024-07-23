@@ -21,15 +21,5 @@ public class GroupDTOMapper {
   //
   // return null;
   // }
-  //
-  // private static List<UserMessageResponseDTO>
-  // getParticipants(EventGroupUserEntity group) {
-  // return null;
-  // }
-  //
-  // private static List<EventMessageDTO> getMessages(EventGroupUserEntity group)
-  // {
-  // return null;
-  // }
-  //
+
 }

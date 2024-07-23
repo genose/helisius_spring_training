@@ -58,7 +58,6 @@ public class EventEntity extends BaseCommonEntity {
   private TTimingEntity firstTiming;
 
   @OneToMany(mappedBy = "relatedEvents", fetch = FetchType.EAGER)
-  @JsonBackReference
   private Collection<EventGroupUserEntity> referencedEventGroups;
 
 }
