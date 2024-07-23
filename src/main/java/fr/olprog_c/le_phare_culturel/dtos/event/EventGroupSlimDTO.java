@@ -11,6 +11,7 @@ public record EventGroupSlimDTO(
         Long id,
         @JsonProperty("group_name") String groupName,
         @JsonProperty("time_meet") Instant timeMeet,
+        @JsonProperty("group_size") int groupMaxSize,
         String description,
         UserSlimResponseDTO author,
         List<EventMessageSlimDTO> messages) {

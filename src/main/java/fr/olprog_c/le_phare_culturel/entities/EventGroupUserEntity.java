@@ -41,7 +41,7 @@ public class EventGroupUserEntity extends BaseCommonEntity {
     private String groupName;
 
     @Column(name = "group_size", nullable = false, columnDefinition = "TINYINT UNSIGNED")
-    private Integer groupSize;
+    private Integer groupMaxSize;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Instant timeMeet;

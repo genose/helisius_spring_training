@@ -4,32 +4,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import fr.olprog_c.le_phare_culturel.dtos.event.*;
 import fr.olprog_c.le_phare_culturel.dtos.user.UserSlimResponseDTO;
+import fr.olprog_c.le_phare_culturel.entities.*;
+import fr.olprog_c.le_phare_culturel.models.event.EventGroupModelDTO;
 import org.springframework.data.domain.Page;
-
-import fr.olprog_c.le_phare_culturel.dtos.event.EventDateDetailsDTO;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventDetailReponseDTO;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventDetailReponseGroupsCountDTO;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventDetailReponseWithoutGroupDTO;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventDetailSlimReponseDTO;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventGroupCountDTO;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventGroupDTO;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventGroupSlimDTO;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventGroupUserMessageMapper;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventImagesDTO;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventLocationCoordinatesDTO;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventLocationPlaceDTO;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventMessageDTO;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventMessageSlimDTO;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventResponseDTO;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventResponseWithoutGroupDTO;
-import fr.olprog_c.le_phare_culturel.entities.EventEntity;
-import fr.olprog_c.le_phare_culturel.entities.EventGroupUserEntity;
-import fr.olprog_c.le_phare_culturel.entities.ImageEntity;
-import fr.olprog_c.le_phare_culturel.entities.LocationEntity;
-import fr.olprog_c.le_phare_culturel.entities.TTimingEntity;
 
 public class EventDTOMapper {
 
@@ -196,15 +176,33 @@ public class EventDTOMapper {
                 timing.getEnd());
     }
 
-    public static EventGroupDTO convertGroupDTO(EventGroupUserEntity event) {
+    public static EventGroupModelDTO convertGroupDTO(EventGroupUserEntity event) {
         List<EventMessageDTO> messages = event.getReferencedGroupsMessages()
                 .stream()
                 .map(EventGroupUserMessageMapper::toDTO)
                 .toList();
-        List<UserSlimResponseDTO> participantList = event.getReferencedUserList().stream().map(UserDTOMapper::responseSlimDTO).toList();
-        return new EventGroupDTO(
+        List<UserSlimResponseDTO> participantList = event.getReferencedUserList()
+                .stream()
+                .map(UserDTOMapper::responseSlimDTO)
+                .toList();
+
+        /*
+         Long id,
+        @JsonProperty("group_name") String groupName,
+        @JsonProperty("time_meet") Instant timeMeet,
+        @JsonProperty("group_size") int groupMaxSize,
+        String description,
+        UserResponseDTO author,
+        List<UserSlimResponseDTO> participants,
+        List<EventMessageDTO> messages
+         */
+        return new EventGroupModelDTO(
                 event.getId(),
+                event.getRelatedEvents(),
                 event.getGroupName(),
+                event.getTimeMeet(),
+                event.getGroupMaxSize(),
+                event.getDescription(),
                 UserDTOMapper.responseDTO(event.getReferencedUserAuthor()),
                 participantList,
                 messages);
@@ -221,6 +219,7 @@ public class EventDTOMapper {
                 event.getId(),
                 event.getGroupName(),
                 event.getTimeMeet(),
+                event.getGroupMaxSize(),
                 event.getDescription(),
                 UserDTOMapper.responseSlimDTO(event.getReferencedUserAuthor()),
                 messages);
@@ -232,6 +231,11 @@ public class EventDTOMapper {
 
         return new EventGroupCountDTO(event.getGroupName(), countMessages);
 
+    }
+    public EventEntity convertFromEventIDDtoEventEntitySlim(EventsSlimIDDto slimIDDto){
+               EventEntity entity = new EventEntity();
+               entity.setUid( slimIDDto.uid() );
+        return entity;
     }
 
 }

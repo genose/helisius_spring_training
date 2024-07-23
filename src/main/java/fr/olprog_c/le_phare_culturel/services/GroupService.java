@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import fr.olprog_c.le_phare_culturel.dtos.event.EventGroupsSlimPostRequestDTO;
-import fr.olprog_c.le_phare_culturel.dtos.event.EventParticipantsGroupDTO;
+import fr.olprog_c.le_phare_culturel.dtos.event.EventGroupParticipantsResponseDTO;
 import fr.olprog_c.le_phare_culturel.dtos.mapper.GroupDTOMapper;
 import org.springframework.stereotype.Service;
 
@@ -53,9 +53,8 @@ public class GroupService {
         return null;
     }
 
-    public EventParticipantsGroupDTO convertEntityToResponseDTO(EventGroupUserEntity newGroupEntity) {
-        EventParticipantsGroupDTO responseDTO = GroupDTOMapper::convertGroupEntityToSlimDTO(newGroupEntity);
-
-        return responseDTO;
+    public EventGroupParticipantsResponseDTO convertEntityToResponseDTO(EventGroupUserEntity newGroupEntity) {
+        EventGroupParticipantsResponseDTO toEventGroupParticipantsResponseDTO = GroupDTOMapper::convertGroupEntityToEventGroupParticipantsResponseDTO(newGroupEntity);
+        return toEventGroupParticipantsResponseDTO;
     }
 }
