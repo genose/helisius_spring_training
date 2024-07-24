@@ -80,9 +80,6 @@ public class UserEntity extends BaseCommonEntity implements UserDetails {
     @ColumnDefault(value = "\"/assets/images/avatars/avatar1.svg\"")
     private String avatar = "/assets/images/avatars/avatar1.svg";
 
-    @ManyToMany
-    private Collection<EventGroupUserEntity> referencedGroups;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + this.userRole));

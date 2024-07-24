@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -54,7 +55,7 @@ public class EventGroupUserEntity extends BaseCommonEntity {
     @JoinColumn(name = "related_events")
     private EventEntity relatedEvents;
 
-    @ManyToMany(mappedBy = "referencedGroups")
+    @ManyToMany(cascade = CascadeType.ALL)
     private Collection<UserEntity> referencedUserList;
 
     @OneToMany(mappedBy = "relatedEventsGroups", orphanRemoval = true)
