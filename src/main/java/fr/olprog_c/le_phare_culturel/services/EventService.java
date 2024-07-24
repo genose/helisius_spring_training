@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import fr.olprog_c.le_phare_culturel.dtos.event.EventDetailReponseWithoutGroupDTO;
@@ -27,7 +28,7 @@ public class EventService {
     }
 
     public Page<EventEntity> findAll(int pageNumber, int pageSize) {
-        return eventRepository.findAll(PageRequest.of(pageNumber, pageSize));
+        return eventRepository.findAllByOrderByLastTiming_endAsc(PageRequest.of(pageNumber, pageSize));
     }
 
     public Optional<EventDetailSlimReponseDTO> findByID(long id) {
