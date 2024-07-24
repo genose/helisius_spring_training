@@ -19,6 +19,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,77 +35,80 @@ import lombok.NoArgsConstructor;
 @DynamicUpdate
 public class UserEntity extends BaseCommonEntity implements UserDetails {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Enumerated(EnumType.STRING)
-  // @Column(name = "role", nullable = false)
-  // @ColumnDefault(value = "\""+ UserRoleEnum.USER.getStringValue() + "\"")
-  private UserRoleEnum userRole;
+    @Enumerated(EnumType.STRING)
+    // @Column(name = "role", nullable = false)
+    // @ColumnDefault(value = "\""+ UserRoleEnum.USER.getStringValue() + "\"")
+    private UserRoleEnum userRole;
 
-  @Column(name = "profile_nickname", unique = true, nullable = false, length = 32)
-  @ColumnDefault("\"New User nickname\"")
-  private String profileNickname;
+    @Column(name = "profile_nickname", unique = true, nullable = false, length = 32)
+    @ColumnDefault("\"New User nickname\"")
+    private String profileNickname;
 
-  @Column(name = "profile_description", nullable = false, length = 320)
-  @ColumnDefault("\"New User profile description\"")
-  private String profileDescription;
+    @Column(name = "profile_description", nullable = false, length = 320)
+    @ColumnDefault("\"New User profile description\"")
+    private String profileDescription;
 
-  @Column(name = "first_name", nullable = false, length = 55)
-  @ColumnDefault("\"New User firstname\"")
-  private String firstName;
+    @Column(name = "first_name", nullable = false, length = 55)
+    @ColumnDefault("\"New User firstname\"")
+    private String firstName;
 
-  @Column(name = "last_name", nullable = false, length = 55)
-  @ColumnDefault("\"New User lastname\"")
-  private String lastName;
+    @Column(name = "last_name", nullable = false, length = 55)
+    @ColumnDefault("\"New User lastname\"")
+    private String lastName;
 
-  @Column(nullable = false, length = 245)
-  // @ColumnDefault("SHA2(\"new_password\", 512)")
-  private String password;
-  // @CreationTimestamp
+    @Column(nullable = false, length = 245)
+    // @ColumnDefault("SHA2(\"new_password\", 512)")
+    private String password;
+    // @CreationTimestamp
 
-  @UpdateTimestamp
-  @Column(name = "last_connection", nullable = false, length = 20)
-  private LocalDate lastConnection;
+    @UpdateTimestamp
+    @Column(name = "last_connection", nullable = false, length = 20)
+    private LocalDate lastConnection;
 
-  @Column(name = "user_enabled", nullable = false)
-  @ColumnDefault(value = "false")
-  private boolean userEnabled;
+    @Column(name = "user_enabled", nullable = false)
+    @ColumnDefault(value = "false")
+    private boolean userEnabled;
 
-  @Column(unique = true, nullable = false, length = 128)
-  private String email;
+    @Column(unique = true, nullable = false, length = 128)
+    private String email;
 
-  @Column(nullable = false, length = 255)
-  @ColumnDefault(value = "\"/assets/images/avatars/avatar1.svg\"")
-  private String avatar = "/assets/images/avatars/avatar1.svg";
+    @Column(nullable = false, length = 255)
+    @ColumnDefault(value = "\"/assets/images/avatars/avatar1.svg\"")
+    private String avatar = "/assets/images/avatars/avatar1.svg";
 
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of(new SimpleGrantedAuthority("ROLE_" + this.userRole));
-  }
+    @ManyToMany
+    private Collection<EventGroupUserEntity> referencedGroups;
 
-  @Override
-  public String getUsername() {
-    return this.email;
-  }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.userRole));
+    }
 
-  public boolean isEnabled() {
-    return this.userEnabled;
-  }
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
 
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return UserDetails.super.isCredentialsNonExpired();
-  }
+    public boolean isEnabled() {
+        return this.userEnabled;
+    }
 
-  @Override
-  public boolean isAccountNonLocked() {
-    return this.userEnabled;
-  }
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
 
-  public boolean isAccountNonExpired() {
-    return this.deletedDate == null;
-  }
+    @Override
+    public boolean isAccountNonLocked() {
+        return this.userEnabled;
+    }
+
+    public boolean isAccountNonExpired() {
+        return this.deletedDate == null;
+    }
 
 }

@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -46,17 +47,14 @@ public class EventGroupUserEntity extends BaseCommonEntity {
     @Column(name = "description", nullable = false, length = 255)
     private String description;
 
-    @OneToOne(optional = false)
-    @JsonBackReference
+    @ManyToOne(optional = false)
     private UserEntity referencedUserAuthor;
 
     @ManyToOne()
     @JoinColumn(name = "related_events")
     private EventEntity relatedEvents;
 
-
-    @OneToMany(mappedBy = "id", orphanRemoval = true)
-    @JsonBackReference
+    @ManyToMany(mappedBy = "referencedGroups")
     private Collection<UserEntity> referencedUserList;
 
     @OneToMany(mappedBy = "relatedEventsGroups", orphanRemoval = true)
