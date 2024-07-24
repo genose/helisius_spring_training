@@ -19,7 +19,11 @@ public class EventGroupUserMessageMapper {
         return new EventMessageDTO(
                 messageEntity.getId(),
                 messageEntity.getMessageText(),
-                UserDTOMapper.responseDTO(messageEntity.getReferencedUserAuthor()),
+                UserDTOMapper.responseDTO(messageEntity.getReferencedUserAuthor(),
+                        null,
+                        null,
+                        null,
+                        null),
                 messageEntity.getCreatedDate());
     }
 

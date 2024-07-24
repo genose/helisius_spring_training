@@ -128,7 +128,12 @@ public class AuthController {
             return ResponseEntity.status(401).body(null);
         }
 
-        return ResponseEntity.ok(UserDTOMapper.responseDTO(user));
+        return ResponseEntity.ok(UserDTOMapper.responseDTO(user,
+                null,
+                null,
+                null,
+                null
+                ));
     }
 
     @PostMapping(RouteDefinition.Auth.REFRESH_TOKEN_URL)

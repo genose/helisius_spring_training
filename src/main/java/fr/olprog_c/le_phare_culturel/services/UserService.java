@@ -1,31 +1,47 @@
 package fr.olprog_c.le_phare_culturel.services;
 
+import fr.olprog_c.le_phare_culturel.dtos.event.EventDetailReponseWithoutGroupDTO;
+import fr.olprog_c.le_phare_culturel.dtos.event.EventDetailSlimReponseDTO;
+import fr.olprog_c.le_phare_culturel.dtos.event.EventGroupParticipantsResponseDTO;
+import fr.olprog_c.le_phare_culturel.dtos.event.EventsSlimIDDto;
+import fr.olprog_c.le_phare_culturel.dtos.mapper.EventDTOMapper;
+import fr.olprog_c.le_phare_culturel.dtos.mapper.GroupDTOMapper;
 import fr.olprog_c.le_phare_culturel.dtos.user.UserNewPasswordPutRequestDTO;
 import fr.olprog_c.le_phare_culturel.dtos.mapper.UserDTOMapper;
 import fr.olprog_c.le_phare_culturel.dtos.user.UserAvatarPutRequestDTO;
 import fr.olprog_c.le_phare_culturel.dtos.user.UserRequestDTO;
 import fr.olprog_c.le_phare_culturel.dtos.user.UserResponseDTO;
+import fr.olprog_c.le_phare_culturel.entities.EventEntity;
+import fr.olprog_c.le_phare_culturel.entities.EventGroupUserEntity;
+import fr.olprog_c.le_phare_culturel.entities.TTimingEntity;
 import fr.olprog_c.le_phare_culturel.entities.UserEntity;
+import fr.olprog_c.le_phare_culturel.repositories.EventRepository;
+import fr.olprog_c.le_phare_culturel.repositories.GroupRepository;
 import fr.olprog_c.le_phare_culturel.repositories.UserRepository;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.time.OffsetDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private static UserRepository userRepository;
     /* ****** ****** utile Object.andThen(save()) ****** ****** */
     private static UserEntity userEntity;
+    private final EventRepository eventRepository;
+    private final GroupRepository groupRepository;
 
     /**
      * UserService constructor
      *
      * @param userRepository The UserRepository to be used by this service
      */
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, EventRepository eventRepository, GroupRepository groupRepository) {
         this.userRepository = userRepository;
+        this.eventRepository = eventRepository;
+        this.groupRepository = groupRepository;
     }
 
     /**
@@ -37,7 +53,49 @@ public class UserService {
      */
     public UserResponseDTO convertEntityToResponseDTO(UserEntity user) {
         try {
-            return UserDTOMapper.responseDTO(user);
+            UserResponseDTO userResponseDTO = null;
+            /* ****** ****** ****** ****** */
+            if (user != null) {
+                /* ****** ****** ****** ****** */
+                Optional<List<EventGroupUserEntity>> allEventGroupsForUser =
+                        Optional.ofNullable(groupRepository.findAllEventGroupsByReferencedUserListUserId(user.getId()));
+                /* ****** ****** ****** ****** */
+                List<Long> ids = allEventGroupsForUser.orElse(Collections.emptyList()).stream()
+                        .map(EventGroupUserEntity::getRelatedEvents)
+                        .map(EventEntity::getUid)
+                        .collect(Collectors.toList());
+                /* ****** ****** ****** ****** */
+                Optional<List<EventEntity>> listEventsOpt = eventRepository.findFutureEventsWithIds(ids);
+                /* ****** ****** ****** ****** */
+                List<EventEntity> listEvents = listEventsOpt.orElse(Collections.emptyList());
+                /* ****** ****** ****** ****** */
+                List<EventDetailReponseWithoutGroupDTO> futureEventsListDTO = listEvents.stream()
+                        .map(EventDTOMapper::convertDetailReponseWithoutGroupDTO)
+                        .toList();
+                /* ****** ****** ****** ****** */
+                /* ****** ****** ****** ****** */
+                userResponseDTO = UserDTOMapper.responseDTO(user,
+                        null,
+                        null,
+                        null,
+                        null);
+
+                userResponseDTO.eventsFuture(futureEventsListDTO);
+                /* ****** ****** ****** ****** */
+                if(allEventGroupsForUser.isPresent())
+                {
+                    List<EventGroupUserEntity> groupUserEntityList = allEventGroupsForUser.orElse(Collections.emptyList());
+                    List<EventGroupParticipantsResponseDTO> participantsResponseDTOList = groupUserEntityList
+                            .stream()
+                            .map(GroupDTOMapper::convertGroupEntityToEventGroupParticipantsResponseDTO)
+                            .toList();
+
+                    userResponseDTO.groupsList(participantsResponseDTOList);
+                }
+            }
+            /* ****** ****** ****** ****** */
+            return userResponseDTO;
+            /* ****** ****** ****** ****** */
         } catch (Exception e) {
             throw new BadCredentialsException(" Erreur de conversion : " + e.getMessage());
         }
@@ -47,7 +105,7 @@ public class UserService {
      * Updates a UserEntity based on a UserPostRequestDTO
      *
      * @param requestDTO The request DTO containing the new user data
-     * @param user The entity to be updated
+     * @param user       The entity to be updated
      * @return This service, for chaining
      * @throws BadCredentialsException If the old and new password are identical or the replacement password is different
      */
@@ -95,7 +153,7 @@ public class UserService {
     /**
      * Convert UserAvatarPutRequestDTO to UserEntity
      *
-     * @param dto The UserAvatarPutRequestDTO containing updated avatar URL
+     * @param dto  The UserAvatarPutRequestDTO containing updated avatar URL
      * @param user The UserEntity to be updated
      * @return This UserService instance for chaining
      */
@@ -113,7 +171,7 @@ public class UserService {
      * Update the UserEntity based on UserNewPasswordPutRequestDTO
      *
      * @param requestDTO The request DTO containing the new password data
-     * @param user The UserEntity to be updated
+     * @param user       The UserEntity to be updated
      * @return This UserService instance for chaining
      * @throws BadCredentialsException If the old and new password are identical, or if the confirmation password doesn't match the new password
      */

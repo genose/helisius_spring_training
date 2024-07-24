@@ -203,7 +203,11 @@ public class EventDTOMapper {
                 event.getTimeMeet(),
                 event.getGroupMaxSize(),
                 event.getDescription(),
-                UserDTOMapper.responseDTO(event.getReferencedUserAuthor()),
+                UserDTOMapper.responseDTO(event.getReferencedUserAuthor(),
+                        null,
+                        null,
+                        null,
+                        null),
                 participantList,
                 messages);
 
