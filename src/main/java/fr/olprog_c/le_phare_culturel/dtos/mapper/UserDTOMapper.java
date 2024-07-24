@@ -18,7 +18,10 @@ public class UserDTOMapper {
                 user.getProfileNickname(),
                 user.getEmail(),
                 user.getAvatar(),
-                user.getProfileDescription());
+                user.getProfileDescription(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>());
 
     }
 
@@ -36,7 +39,10 @@ public class UserDTOMapper {
         useruserEntity.getProfileNickname(),
         useruserEntity.getEmail(),
         useruserEntity.getAvatar(),
-        useruserEntity.getProfileDescription());
+        useruserEntity.getProfileDescription(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>());
     }
 
     public static UserEntity convertUserResponseDtoUserEntity(UserResponseDTO userResponseDTO){
@@ -52,7 +58,7 @@ public class UserDTOMapper {
     public static EventGroupUserEntity convertEventGroupModelDTOToEventGroupUserEntity(EventGroupModelDTO eventGroupModelDTO){
         EventEntity relatedEventEntity = new EventEntity();
         relatedEventEntity.setUid(eventGroupModelDTO.id());
-        EventGroupUserEntity eventGroupUserEntity= new EventGroupUserEntity(
+        return new EventGroupUserEntity(
                 eventGroupModelDTO.id(),
                 eventGroupModelDTO.groupName(),
                 eventGroupModelDTO.groupMaxSize(),
@@ -63,7 +69,6 @@ public class UserDTOMapper {
                 UserDTOMapper.convertUserSlimResponseDtoUserEntityList(eventGroupModelDTO.participants()),
                 EventMessageDTOMapper.convertEventMessageDtoToEventMessageEntityList(eventGroupModelDTO.messages())
         );
-        return eventGroupUserEntity;
     }
 
     private static List<UserEntity> convertUserSlimResponseDtoUserEntityList(List<UserSlimResponseDTO> participants) {

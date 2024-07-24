@@ -12,5 +12,5 @@ public interface GroupRepository extends JpaRepository<EventGroupUserEntity, Lon
 
     Optional<EventGroupUserEntity> findByGroupName(String groupName);
 
-    EventGroupUserEntity findBy_Uid(long groupid);
+    EventGroupUserEntity findByid(long groupid);
 }

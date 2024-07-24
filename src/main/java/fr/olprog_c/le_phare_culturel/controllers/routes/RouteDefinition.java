@@ -35,6 +35,7 @@ public final class RouteDefinition {
     public static final String TAGS_URL = EVENTS_URL + "/tags/{filters}";
     public static final String TAGS_FILTER_URL = EVENTS_URL + "/filters/{tags}";
     public static final String FILTER_URL = EVENTS_URL + "/filters";
+    public static final String EVENTS_WITH_ID_GROUP_WITH_ID_MESSAGING_URL = EVENTS_WITH_ID_GROUP_WITH_ID_URL+"/messages";
   }
 
   public static class Groups {

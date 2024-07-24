@@ -38,7 +38,7 @@ public class GroupDataInitializer implements CommandLineRunner {
             group1.setGroupMaxSize(5);
             group1.setReferencedUserAuthor(user1);
             group1.setRelatedEvents(event1);
-            group1.setTimeMeet(Instant.now().plusSeconds(3600));
+            group1.setTimeMeet(Instant.now().plusSeconds(3600).toString());
             groupRepository.save(group1);
 
             EventGroupUserEntity group2 = new EventGroupUserEntity();
@@ -47,7 +47,7 @@ public class GroupDataInitializer implements CommandLineRunner {
             group2.setGroupMaxSize(10);
             group2.setReferencedUserAuthor(user2);
             group2.setRelatedEvents(event2);
-            group2.setTimeMeet(Instant.now().plusSeconds(3600));
+            group2.setTimeMeet(Instant.now().plusSeconds(3600).toString());
             groupRepository.save(group2);
         } catch (Exception e) {
             // TODO: handle exception

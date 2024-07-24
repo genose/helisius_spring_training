@@ -13,6 +13,7 @@ public class EventMessageDTOMapper {
         Collection<EventGroupUserMessageEntity> messageEntities = new ArrayList<EventGroupUserMessageEntity>();
         for (EventMessageDTO message : messages) {
             EventGroupUserMessageEntity messageEntity = new EventGroupUserMessageEntity();
+            messageEntity.setMessageText("Nouveau message ...");
             messageEntity.setCreatedDate(message.dateCreation());
             messageEntity.setUpdatedDate(message.dateCreation());
             messageEntities.add(messageEntity);

@@ -10,7 +10,7 @@ import fr.olprog_c.le_phare_culturel.dtos.user.UserSlimResponseDTO;
 public record EventGroupSlimDTO(
         Long id,
         @JsonProperty("group_name") String groupName,
-        @JsonProperty("time_meet") Instant timeMeet,
+        @JsonProperty("time_meet") String timeMeet,
         @JsonProperty("group_size") int groupMaxSize,
         String description,
         UserSlimResponseDTO author,

@@ -1,9 +1,6 @@
 package fr.olprog_c.le_phare_culturel.entities;
 
-import java.time.Instant;
 import java.util.Collection;
-
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -37,19 +34,20 @@ public class EventGroupUserEntity extends BaseCommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "group_name", nullable = false, unique = true, length = 50)
+    @Column(name = "group_name", nullable = false, length = 50)
     private String groupName;
 
     @Column(name = "group_size", nullable = false, columnDefinition = "TINYINT UNSIGNED")
     private Integer groupMaxSize;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Instant timeMeet;
+    private String timeMeet;
 
     @Column(name = "description", nullable = false, length = 255)
     private String description;
 
-    @OneToOne
+    @OneToOne(optional = false)
+    @JsonBackReference
     private UserEntity referencedUserAuthor;
 
     @ManyToOne()

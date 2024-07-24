@@ -14,7 +14,7 @@ public record EventGroupModelDTO(
         Long id,
         EventEntity relatedEventsID,
         @JsonProperty("group_name") String groupName,
-        @JsonProperty("time_meet") Instant timeMeet,
+        @JsonProperty("time_meet") String timeMeet,
         @JsonProperty("group_size") int groupMaxSize,
         String description,
         UserResponseDTO author,

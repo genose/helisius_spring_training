@@ -71,7 +71,7 @@ public class DataLoader implements CommandLineRunner {
             group.setGroupMaxSize(5 + i);
             group.setReferencedUserAuthor(users.get(i % users.size()));
             group.setRelatedEvents(events.get(i % events.size()));
-            group.setTimeMeet(Instant.now().plusSeconds(3600 * i));
+            group.setTimeMeet(Instant.now().plusSeconds(3600 * i).toString());
             groupRepository.save(group);
             groups.add(group);
         }

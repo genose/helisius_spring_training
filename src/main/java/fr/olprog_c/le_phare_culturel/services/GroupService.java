@@ -28,7 +28,7 @@ public class GroupService {
     }
 
     public EventGroupUserEntity findGroupById(long groupid) {
-        return groupRepository.findBy_Uid(groupid);
+        return groupRepository.findByid(groupid);
     }
 
     public List<EventGroupUserEntity> findAllGroupsByRelatedEventId(long eventid) {
@@ -46,15 +46,10 @@ public class GroupService {
 
     public EventGroupUserEntity saveEntity(EventGroupUserEntity groupUserEntityToSave) {
         Optional<EventGroupUserEntity> entity = Optional.of(this.groupRepository.save(groupUserEntityToSave));
-        if(entity.isPresent())
-        {
-            return entity.get();
-        }
-        return null;
+        return entity.orElse(null);
     }
 
     public EventGroupParticipantsResponseDTO convertEntityToResponseDTO(EventGroupUserEntity newGroupEntity) {
-        EventGroupParticipantsResponseDTO toEventGroupParticipantsResponseDTO = GroupDTOMapper::convertGroupEntityToEventGroupParticipantsResponseDTO(newGroupEntity);
-        return toEventGroupParticipantsResponseDTO;
+                return GroupDTOMapper.convertGroupEntityToEventGroupParticipantsResponseDTO(newGroupEntity);
     }
 }

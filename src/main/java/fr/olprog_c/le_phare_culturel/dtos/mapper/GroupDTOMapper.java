@@ -1,5 +1,6 @@
 package fr.olprog_c.le_phare_culturel.dtos.mapper;
 
+import java.io.ObjectStreamClass;
 import java.util.Collection;
 import java.util.List;
 
@@ -11,58 +12,32 @@ import fr.olprog_c.le_phare_culturel.entities.UserEntity;
 import fr.olprog_c.le_phare_culturel.models.event.EventGroupModelDTO;
 
 public class GroupDTOMapper {
-    // public static EventGroupParticipantsResponseDTO
-    // groupUserToParticipantsGroupDTO(EventGroupUserEntity group,
-    // List<UserEntity> participants, List<EventMessageDTO> messages) {
-    // new EventGroupParticipantsResponseDTO(
-    // group.getId(),
-    // group.getGroupName(),
-    // group.getReferencedGroupsMessagesId().size(),
-    //
-    // null);
-    //
-    // return null;
-    // }
-    public static EventGroupUserEntity convertGroupRequestDTOToEventGroupUserEntity(EventGroupModelDTO eventGroupModelDTO) {
-        List<UserSlimResponseDTO> participantsList = eventGroupModelDTO.participants();
-        /*
-         Long id,
-            @JsonProperty("group_name") String groupName,
-            @JsonProperty("time_meet") Instant timeMeet,
-            @JsonProperty("group_size") int groupMaxSize,
-            String description,
-            UserResponseDTO author,
-            List<UserSlimResponseDTO> participants,
-            List<EventMessageDTO> messages
-         */
-        return new EventGroupUserEntity(
-                eventGroupModelDTO.id(),
-                eventGroupModelDTO.groupName(),
-                eventGroupModelDTO.groupMaxSize(),
-                eventGroupModelDTO.timeMeet(),
-                eventGroupModelDTO.description(),
-                UserDTOMapper::convertUserResponseDtoUserEntity (eventGroupModelDTO.author()),
-                eventGroupModelDTO.participants(),
-                eventGroupModelDTO.messages()
-        );
 
-    }
-
-public static UserEntity convertEventGroupModelDTOToUserEntity(){
-
-}
     public static EventGroupParticipantsResponseDTO convertGroupEntityToEventGroupParticipantsResponseDTO(EventGroupUserEntity eventGroupUser) {
 
+        UserSlimResponseDTO author = ((eventGroupUser.getReferencedUserAuthor() != null) ? UserDTOMapper.responseSlimDTO(eventGroupUser.getReferencedUserAuthor()) : null);
+
         Collection<EventGroupUserMessageEntity> messagesEntitiesList = eventGroupUser.getReferencedGroupsMessages();
+        if (messagesEntitiesList != null) {
+            List<EventMessageSlimDTO> messages = messagesEntitiesList.stream()
+                    .map(EventGroupUserMessageMapper::toSlimDTO)
+                    .toList();
 
-        List<EventMessageSlimDTO> messages = messagesEntitiesList.stream()
-                .map(EventGroupUserMessageMapper::toSlimDTO)
-                .toList();
+            List<UserEntity> participantsList = (List<UserEntity>) eventGroupUser.getReferencedUserList();
 
-        List<UserSlimResponseDTO> participantsList = messagesEntitiesList.stream()
-                .map(EventGroupUserMessageMapper::toSlimDTO)
-                .map(EventMessageSlimDTO::author)
-                .distinct().toList();
+            List<UserSlimResponseDTO> participantsListDto = (participantsList != null ? participantsList.stream()
+                    .map(UserDTOMapper::responseSlimDTO).toList() : null);
+
+            return new EventGroupParticipantsResponseDTO(
+                    eventGroupUser.getId(),
+                    eventGroupUser.getGroupName(),
+                    eventGroupUser.getTimeMeet(),
+                    eventGroupUser.getGroupMaxSize(),
+                    eventGroupUser.getDescription(),
+                    author,
+                    participantsListDto,
+                    messages);
+        }
 
         return new EventGroupParticipantsResponseDTO(
                 eventGroupUser.getId(),
@@ -70,11 +45,26 @@ public static UserEntity convertEventGroupModelDTOToUserEntity(){
                 eventGroupUser.getTimeMeet(),
                 eventGroupUser.getGroupMaxSize(),
                 eventGroupUser.getDescription(),
-                UserDTOMapper.responseSlimDTO(eventGroupUser.getReferencedUserAuthor()),
-                participantsList,
-                messages);
+                author,
+                null,
+                null);
 
     }
+    /* ******
+    public static EventGroupUserEntity convertGroupRequestDTOToEventGroupUserEntity(EventGroupModelDTO eventGroupModelDTO) {
+        List<UserEntity> participantsList = eventGroupModelDTO.participants().stream().map(UserDTOMapper::convert).toList();
+        List<EventGroupUserMessageEntity> messagesList = eventGroupModelDTO.messages().stream().map(EventGroupUserMessageMapper::fromDTO).toList();
+        return new EventGroupUserEntity(
+                eventGroupModelDTO.id(),
+                eventGroupModelDTO.groupName(),
+                eventGroupModelDTO.groupMaxSize(),
+                eventGroupModelDTO.timeMeet(),
+                eventGroupModelDTO.description(),
+                UserDTOMapper::convertUserResponseDtoUserEntity(eventGroupModelDTO.author()),
+                participantsList,
+                messagesList);
+
+    } ****** */
 
 
 }

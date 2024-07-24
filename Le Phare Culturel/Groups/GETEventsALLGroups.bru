@@ -1,0 +1,15 @@
+meta {
+  name: GETEventsALLGroups
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{api_url}}/events/20829667/groups
+  body: none
+  auth: none
+}
+
+headers {
+  cookie: access_token={{access_token}};refresh_token={{refresh_token}}
+}
