@@ -7,7 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import fr.olprog_c.le_phare_culturel.dtos.event.EventDetailReponseWithoutGroupDTO;
 import fr.olprog_c.le_phare_culturel.dtos.event.EventDetailSlimReponseDTO;
+import fr.olprog_c.le_phare_culturel.dtos.event.EventResponseWithoutGroupDTO;
 import fr.olprog_c.le_phare_culturel.dtos.mapper.EventDTOMapper;
 import fr.olprog_c.le_phare_culturel.entities.EventEntity;
 import fr.olprog_c.le_phare_culturel.repositories.EventRepository;
@@ -34,6 +36,10 @@ public class EventService {
             return retrievedEvent.map(EventDTOMapper::convertDetailSlimResponseDTO);
         }
         return Optional.empty();
+    }
+
+    public EventDetailReponseWithoutGroupDTO random() {
+        return eventRepository.findRandomEvent().map(EventDTOMapper::convertDetailReponseWithoutGroupDTO).orElse(null);
     }
 
     // public List<EventEntityResponseDTO> findAllInLimitDTO(int pageNumber, int

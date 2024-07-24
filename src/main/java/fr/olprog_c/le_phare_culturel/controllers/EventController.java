@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpServerErrorException;
 
 import fr.olprog_c.le_phare_culturel.controllers.routes.RouteDefinition;
+import fr.olprog_c.le_phare_culturel.dtos.event.EventDetailReponseWithoutGroupDTO;
 import fr.olprog_c.le_phare_culturel.dtos.event.EventDetailSlimReponseDTO;
 import fr.olprog_c.le_phare_culturel.dtos.event.EventResponseWithoutGroupDTO;
 import fr.olprog_c.le_phare_culturel.dtos.mapper.EventDTOMapper;
@@ -43,6 +44,11 @@ public class EventController {
 
         return ResponseEntity.ok(EventDTOMapper.convertPageToResponseWithoutGroupDTO(events));
 
+    }
+
+    @GetMapping("/events/random")
+    public ResponseEntity<EventDetailReponseWithoutGroupDTO> getRandomEvent() {
+        return ResponseEntity.ok(eventService.random());
     }
 
 }
