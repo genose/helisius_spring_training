@@ -29,16 +29,19 @@ public final class RouteDefinition {
     public static final String EVENTS_URL = "/events";
     public static final String EVENTS_WITH_ID_URL = EVENTS_URL + "/{eventid}";
     public static final String EVENTS_WITH_ID_GROUP_WITH_ID_URL = EVENTS_URL + "/{eventid}" + Groups.GROUPS_WITH_ID_URL;
+    public static final String EVENTS_WITH_ID_GROUP_WITH_ID_USERS_URL = EVENTS_URL + "/{eventid}" + Groups.GROUPS_WITH_ID_URL+Users.USERS_URL;
     public static final String EVENTS_WITH_ID_GROUP_LIST_URL = EVENTS_URL + "/{eventid}" + Groups.GROUPS_URL;
 
     public static final String TAGS_URL = EVENTS_URL + "/tags/{filters}";
     public static final String TAGS_FILTER_URL = EVENTS_URL + "/filters/{tags}";
     public static final String FILTER_URL = EVENTS_URL + "/filters";
+    public static final String EVENTS_WITH_ID_GROUP_WITH_ID_MESSAGING_URL = EVENTS_WITH_ID_GROUP_WITH_ID_URL+"/messages";
   }
 
   public static class Groups {
     public static final String GROUPS_URL = "/groups";
-    public static final String GROUPS_WITH_ID_URL = GROUPS_URL + "/{groupid}";
+    public static final String GROUPS_PARAM_TAG = "groupid";
+    public static final String GROUPS_WITH_ID_URL = GROUPS_URL + "/{"+GROUPS_PARAM_TAG+"}";
     public static final String TAGS_URL = GROUPS_URL + "/" + EventParametersConstants.FILTER_TAGS_NAME;
   }
 
