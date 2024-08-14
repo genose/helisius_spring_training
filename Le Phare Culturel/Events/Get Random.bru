@@ -1,0 +1,22 @@
+meta {
+  name: Get Random
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{api_url}}/events/random
+  body: none
+  auth: none
+}
+
+headers {
+  cookie: access_token={{access_token}}
+}
+
+body:json {
+  {
+    "password": "Sam@1981",
+    "email": "samuel.michaux@ik.me"
+  }
+}

@@ -1,0 +1,24 @@
+meta {
+  name: Register
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{api_url}}/auth/sign-up
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "firstname": "samuel",
+    "password": "Sam@1981",
+    "confirm_password": "Sam@1981",
+    "profile_nickname": "sam",
+    "avatar": "",
+    "profile_description": "coucou coucou",
+    "email": "samuel.michaux@ik.me",
+    "lastname": "michaux"
+  }
+}

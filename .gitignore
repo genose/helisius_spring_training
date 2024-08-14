@@ -262,4 +262,5 @@ $RECYCLE.BIN/
 *.sig
 
 pkg/
-src/
+.env
+
